@@ -86,8 +86,6 @@ describe('design doc Table 6 — eight illustrative candidate villages', () => {
 })
 
 describe('missing evidence is never treated as zero', () => {
-  const desaA = input(100, 95, 85, 75, 70)
-
   it('renormalises when economic linkage is unavailable', () => {
     // Design doc section 5.1: "Jangan mengubah data yang tidak tersedia
     // menjadi skor 0. Hitung POCI provisional dari komponen yang tersedia."

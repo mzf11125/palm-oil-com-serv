@@ -355,25 +355,35 @@ const controlStyle = {
 }
 
 export function TextInput({
+  label,
   value,
   onChange,
   placeholder,
   type = 'text',
+  className = '',
 }: {
+  label?: ReactNode
   value: string
   onChange: (v: string) => void
   placeholder?: string
   type?: string
+  className?: string
 }) {
-  return (
+  const input = (
     <input
       type={type}
       value={value}
       placeholder={placeholder}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full rounded px-2 py-1.5 text-sm"
+      className={`w-full rounded px-2 py-1.5 text-sm ${className}`}
       style={controlStyle}
     />
+  )
+  if (label === undefined) return input
+  return (
+    <Field label={label}>
+      {input}
+    </Field>
   )
 }
 

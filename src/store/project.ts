@@ -38,9 +38,8 @@ import {
 const emptyPociEntry = () => ({ value: null as Scored, note: '', sources: [], tiers: [] })
 
 export function createScreening(villageId: string, proximity: Scored): VillageScreening {
-  const components = Object.fromEntries(
-    POCI_COMPONENTS.map((c) => [c, emptyPociEntry()]),
-  ) as VillageScreening['components']
+  const components = {} as VillageScreening['components']
+  for (const c of POCI_COMPONENTS) components[c] = emptyPociEntry()
 
   // P is the one component the source data already provides. It is seeded with
   // its provenance so it is not mistaken for an analyst judgement.

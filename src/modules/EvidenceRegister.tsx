@@ -232,7 +232,7 @@ function RecordForm({
               options={COMPLETENESS_OPTIONS.map((o) => ({ value: o, label: o }))}
             />
             <Badge tone={COMPLETENESS_TONE[record.completeness]}>
-              {record.completeness[0].toUpperCase()}
+              {(record.completeness[0] ?? '?').toUpperCase()}
             </Badge>
           </div>
         </div>

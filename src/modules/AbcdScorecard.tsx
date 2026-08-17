@@ -21,7 +21,6 @@ import {
   CoverageMeter,
   ConfidenceBadge,
   Badge,
-  Button,
   TextArea,
   Select,
   Field,
@@ -36,7 +35,7 @@ import {
   RATING_ANCHORS,
 } from '@/reference/indicators'
 import { CONTRIBUTION_DEFINITIONS, EVIDENCE_TIER_DEFINITIONS } from '@/reference/framework'
-import { PILLARS, CONFIDENCE_GRADES, CONTRIBUTION_CATEGORIES, EVIDENCE_TIERS, ABCD_COMPONENTS } from '@/domain/types'
+import { PILLARS, CONFIDENCE_GRADES, CONTRIBUTION_CATEGORIES, EVIDENCE_TIERS } from '@/domain/types'
 import type {
   AbcdComponent,
   ConfidenceGrade,

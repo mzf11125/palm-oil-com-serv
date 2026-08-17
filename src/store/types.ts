@@ -18,7 +18,6 @@ import type {
   ValidationTier,
 } from '@/domain/types'
 import type { ComparatorCriterionKey } from '@/domain/portfolio'
-import type { TriggerCode } from '@/domain/validation'
 
 /** One POCI component score plus the evidence behind it. */
 export interface PociComponentEntry {

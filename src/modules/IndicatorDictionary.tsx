@@ -20,7 +20,7 @@ import {
   PILLAR_DEFINITIONS,
   type IndicatorDefinition,
 } from '@/reference/indicators'
-import { Panel, Empty, MethodNote } from '@/components/ui'
+import { Empty } from '@/components/ui'
 import type { EvidenceTier, PillarCode } from '@/domain/types'
 import type { Locale } from '@/i18n/strings'
 
