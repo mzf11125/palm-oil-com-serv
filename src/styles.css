@@ -1,0 +1,222 @@
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+
+/*
+ * Design tokens.
+ *
+ * Palette values come from the validated reference instance. The ordinal
+ * exposure ramp (4 blue steps) was run through the palette validator in both
+ * modes: all checks pass — monotone lightness, adjacent dL >= 0.06, light-end
+ * contrast 2.06:1 light / 2.15:1 dark, single hue (4 deg spread).
+ *
+ * Exposure bands are an ORDERED scale (high -> low), so they use a one-hue
+ * ordinal ramp rather than categorical hues. Status colors are reserved for
+ * validation/portfolio state and never used for data series.
+ */
+
+@theme {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces and ink */
+  --surface-1: #fcfcfb;
+  --surface-page: #f9f9f7;
+  --surface-sunken: #f2f2ef;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+  --gridline: #e1e0d9;
+  --baseline: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.1);
+  --border-strong: rgba(11, 11, 11, 0.18);
+
+  /* Sequential / ordinal blue — magnitude encoding */
+  --seq-100: #cde2fb;
+  --seq-250: #86b6ef;
+  --seq-400: #3987e5;
+  --seq-450: #2a78d6;
+  --seq-500: #256abf;
+  --seq-600: #184f95;
+  --seq-700: #0d366b;
+
+  /* Exposure bands: ordinal, high -> low */
+  --band-high: #0d366b;
+  --band-moderate: #256abf;
+  --band-unbanded: #3987e5;
+  --band-low: #86b6ef;
+
+  /* Status — reserved, never a data series */
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+  --success-text: #006300;
+
+  /* Missing evidence. Deliberately achromatic: NA is the absence of a value,
+     not a low value, and must never read as a point on the magnitude ramp. */
+  --na: #898781;
+  --na-fill: rgba(137, 135, 129, 0.14);
+
+  --accent: #2a78d6;
+  --accent-soft: rgba(42, 120, 214, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme='light'])) {
+    color-scheme: dark;
+    --surface-1: #1a1a19;
+    --surface-page: #0d0d0d;
+    --surface-sunken: #222220;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --gridline: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255, 255, 255, 0.1);
+    --border-strong: rgba(255, 255, 255, 0.18);
+
+    --seq-100: #0d366b;
+    --seq-250: #184f95;
+    --seq-400: #2a78d6;
+    --seq-450: #3987e5;
+    --seq-500: #6da7ec;
+    --seq-600: #86b6ef;
+    --seq-700: #cde2fb;
+
+    --band-high: #cde2fb;
+    --band-moderate: #6da7ec;
+    --band-unbanded: #2a78d6;
+    --band-low: #184f95;
+
+    --success-text: #0ca30c;
+    --accent: #3987e5;
+    --accent-soft: rgba(57, 135, 229, 0.16);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --surface-1: #1a1a19;
+  --surface-page: #0d0d0d;
+  --surface-sunken: #222220;
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+  --gridline: #2c2c2a;
+  --baseline: #383835;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+
+  --seq-100: #0d366b;
+  --seq-250: #184f95;
+  --seq-400: #2a78d6;
+  --seq-450: #3987e5;
+  --seq-500: #6da7ec;
+  --seq-600: #86b6ef;
+  --seq-700: #cde2fb;
+
+  --band-high: #cde2fb;
+  --band-moderate: #6da7ec;
+  --band-unbanded: #2a78d6;
+  --band-low: #184f95;
+
+  --success-text: #0ca30c;
+  --accent: #3987e5;
+  --accent-soft: rgba(57, 135, 229, 0.16);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Columns that must align vertically get tabular figures; hero and tile
+   values keep proportional figures. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.surface {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+}
+
+.hairline {
+  border-color: var(--border);
+}
+
+/* Focus ring that survives both themes. */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Leaflet needs an explicit surface in dark mode or tiles sit on white. */
+.leaflet-container {
+  background: var(--surface-sunken);
+  font-family: var(--font-sans);
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+
+.leaflet-bar a,
+.leaflet-bar a:hover {
+  background: var(--surface-1);
+  color: var(--text-primary);
+  border-bottom-color: var(--border);
+}
+
+/* Dark mode: tone down the raster basemap so data marks stay dominant. */
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme='light'])) .leaflet-tile-pane {
+    filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9);
+  }
+}
+:root[data-theme='dark'] .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9);
+}
+
+/* Scrollbars inside data panes. */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--baseline) transparent;
+}
+
+/* Wide tables scroll inside their own container; the page never scrolls
+   horizontally. */
+.table-scroll {
+  overflow-x: auto;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .print-break {
+    break-after: page;
+  }
+  .surface {
+    border: 1px solid #ccc;
+  }
+}
