@@ -27,6 +27,8 @@ import {
 import type { ValidationItem } from '@/domain/validation'
 import {
   PROJECT_SCHEMA_VERSION,
+  APPLICATION_ID,
+  LEGACY_APPLICATION_IDS,
   type CaseProject,
   type EvidenceRecord,
   type IndicatorAssessment,
@@ -315,32 +317,44 @@ export const useProjectStore = create<ProjectState>()(
        * which case it is retained as a record of work done.
        */
       syncValidation: (caseId, derived) =>
-        set((s) =>
-          mutateCase(s, caseId, (d) => {
-            const derivedIds = new Set(derived.map((i) => i.id))
-            const next: Record<string, ValidationRecord> = {}
+        set((s) => {
+          const current = s.cases[caseId]?.validation ?? {}
+          const derivedIds = new Set(derived.map((i) => i.id))
+          const next: Record<string, ValidationRecord> = {}
 
-            for (const item of derived) {
-              const existing = d.validation[item.id]
-              next[item.id] = existing ?? {
-                id: item.id,
-                status: 'open',
-                tier: item.tier,
-                tierOverridden: false,
-                assignee: '',
-                note: '',
-                resolution: '',
-              }
+          for (const item of derived) {
+            const existing = current[item.id]
+            next[item.id] = existing ?? {
+              id: item.id,
+              status: 'open',
+              tier: item.tier,
+              tierOverridden: false,
+              assignee: '',
+              note: '',
+              resolution: '',
             }
+          }
 
-            // Preserve resolved/dismissed work whose trigger has since cleared.
-            for (const [id, record] of Object.entries(d.validation)) {
-              if (!derivedIds.has(id) && record.status !== 'open') next[id] = record
-            }
+          // Preserve resolved/dismissed work whose trigger has since cleared.
+          for (const [id, record] of Object.entries(current)) {
+            if (!derivedIds.has(id) && record.status !== 'open') next[id] = record
+          }
 
+          // The queue is re-derived on every render of the validation module,
+          // so this runs constantly. Writing unconditionally would allocate a
+          // new cases object each time, which invalidates the memo that
+          // produced `derived` and spins the module in an infinite update
+          // loop. Existing records are reused by reference above, so an
+          // identity comparison is enough to detect a real change.
+          const unchanged =
+            Object.keys(next).length === Object.keys(current).length &&
+            Object.keys(next).every((id) => current[id] === next[id])
+          if (unchanged) return {}
+
+          return mutateCase(s, caseId, (d) => {
             d.validation = next
-          }),
-        ),
+          })
+        }),
 
       updateValidation: (caseId, id, patch) =>
         set((s) =>
@@ -386,7 +400,7 @@ export const useProjectStore = create<ProjectState>()(
       exportProject: () => ({
         schemaVersion: PROJECT_SCHEMA_VERSION,
         exportedAt: new Date().toISOString(),
-        application: 'ABCDS-RF',
+        application: APPLICATION_ID,
         cases: get().cases,
       }),
 
@@ -395,8 +409,11 @@ export const useProjectStore = create<ProjectState>()(
           return { ok: false, error: 'File is not a valid project object.' }
         }
         const parsed = data as Partial<ProjectExport>
-        if (parsed.application !== 'ABCDS-RF') {
-          return { ok: false, error: 'File is not an ABCDS-RF project export.' }
+        // Accepts the pre-rename identifier too, so existing project files
+        // stay importable after the move to ABCD Scorecard.
+        const known: readonly string[] = [APPLICATION_ID, ...LEGACY_APPLICATION_IDS]
+        if (!parsed.application || !known.includes(parsed.application)) {
+          return { ok: false, error: 'File is not an ABCD Scorecard project export.' }
         }
         if (parsed.schemaVersion !== PROJECT_SCHEMA_VERSION) {
           return {
@@ -418,6 +435,8 @@ export const useProjectStore = create<ProjectState>()(
         set((s) => ({ cases: { ...s.cases, [caseId]: emptyCase(caseId) } })),
     }),
     {
+      // Predates the rename to ABCD Scorecard. Left alone deliberately:
+      // renaming the key would orphan every existing user's autosaved work.
       name: 'abcds-rf-project',
       version: PROJECT_SCHEMA_VERSION,
       partialize: (s) => ({ cases: s.cases, activeCaseId: s.activeCaseId }),

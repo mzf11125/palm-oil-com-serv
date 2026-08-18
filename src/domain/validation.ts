@@ -26,8 +26,7 @@ export type TriggerCode =
 
 export interface TriggerDefinition {
   code: TriggerCode
-  en: string
-  id: string
+  label: string
   /** The tier this trigger normally escalates to. */
   defaultTier: ValidationTier
 }
@@ -36,44 +35,37 @@ export interface TriggerDefinition {
 export const TRIGGERS: Record<TriggerCode, TriggerDefinition> = {
   'missing-evidence': {
     code: 'missing-evidence',
-    en: 'Missing evidence affecting classification or ABCD score',
-    id: 'Missing evidence yang memengaruhi classification atau ABCD score',
+    label: 'Missing evidence affecting classification or ABCD score',
     defaultTier: 'P-R',
   },
   'source-contradiction': {
     code: 'source-contradiction',
-    en: 'Contradiction between company, government, cooperative, community or spatial evidence',
-    id: 'Kontradiksi antara company, government, cooperative, community, atau spatial evidence',
+    label: 'Contradiction between company, government, cooperative, community or spatial evidence',
     defaultTier: 'P-R',
   },
   'low-confidence-advocacy': {
     code: 'low-confidence-advocacy',
-    en: 'Low confidence on a claim important for advocacy or policy',
-    id: 'Confidence rendah pada claim yang penting untuk advocacy atau policy',
+    label: 'Low confidence on a claim important for advocacy or policy',
     defaultTier: 'P-R',
   },
   'agency-not-inferable': {
     code: 'agency-not-inferable',
-    en: 'Agency, participation, inclusion, trust or community control cannot be inferred from secondary data',
-    id: 'Agency, participation, inclusion, trust, atau community control tidak dapat diinferensikan dari data sekunder',
+    label: 'Agency, participation, inclusion, trust or community control cannot be inferred from secondary data',
     defaultTier: 'P-R',
   },
   'facility-functionality-unclear': {
     code: 'facility-functionality-unclear',
-    en: 'Facility or road detected but functionality or public access is unclear',
-    id: 'Facility/road yang terdeteksi tetapi functionality atau public access tidak jelas',
+    label: 'Facility or road detected but functionality or public access is unclear',
     defaultTier: 'P-L',
   },
   'sensitive-environmental-claim': {
     code: 'sensitive-environmental-claim',
-    en: 'Sensitive environmental or facility claim requiring technical verification',
-    id: 'Environmental/facility claim yang sensitif dan memerlukan technical verification',
+    label: 'Sensitive environmental or facility claim requiring technical verification',
     defaultTier: 'P-C',
   },
   'narrative-requirement': {
     code: 'narrative-requirement',
-    en: 'Human-centred narrative required, representing an already-validated pathway',
-    id: 'Kebutuhan human-centred narrative yang harus mewakili pathway yang sudah tervalidasi',
+    label: 'Human-centred narrative required, representing an already-validated pathway',
     defaultTier: 'P-C',
   },
 }
@@ -235,42 +227,30 @@ const FACILITY_INDICATORS: IndicatorCode[] = ['INS-1', 'INS-2', 'PSN-1', 'PSN-2'
 export const ASSESSMENT_TIERS = [
   {
     tier: 'Tier A',
-    scope: { en: 'All candidate communities', id: 'Semua komunitas kandidat' },
+    scope: 'All candidate communities',
     evidence: 'Secondary + administrative + operational + GeoAI',
-    purpose: {
-      en: 'Provisional POCI; ABCD baseline for indicators with available data.',
-      id: 'POCI provisional; ABCD baseline untuk indikator yang datanya tersedia.',
-    },
-    fieldBurden: { en: 'No field routine', id: 'Tidak ada field routine' },
+    purpose: 'Provisional POCI; ABCD baseline for indicators with available data.',
+    fieldBurden: 'No field routine',
   },
   {
     tier: 'Tier B',
-    scope: { en: 'Selected ABCD communities', id: 'Komunitas ABCD terpilih' },
+    scope: 'Selected ABCD communities',
     evidence: 'Tier A + remote KII / mini-validation / FGD',
-    purpose: {
-      en: 'Verify agency, inclusion, functionality, attribution.',
-      id: 'Verifikasi agency, inclusion, functionality, attribution.',
-    },
-    fieldBurden: { en: 'Default primary-data mode', id: 'Mode data primer default' },
+    purpose: 'Verify agency, inclusion, functionality, attribution.',
+    fieldBurden: 'Default primary-data mode',
   },
   {
     tier: 'Tier C',
-    scope: { en: 'Local geotagged verification', id: 'Verifikasi geotagged lokal' },
+    scope: 'Local geotagged verification',
     evidence: 'Mobile GIS, GPS/time, photo, route log, short user confirmation',
-    purpose: {
-      en: 'Resolve road, facility, functionality or location gaps.',
-      id: 'Resolve road/facility/functionality/location gap.',
-    },
-    fieldBurden: { en: 'Triggered only', id: 'Hanya jika dipicu' },
+    purpose: 'Resolve road, facility, functionality or location gaps.',
+    fieldBurden: 'Triggered only',
   },
   {
     tier: 'Tier D',
-    scope: { en: 'Sentinel field visit', id: 'Kunjungan lapangan sentinel' },
+    scope: 'Sentinel field visit',
     evidence: 'Integrated observation, interview, FGD, GPS, technical checks',
-    purpose: {
-      en: 'High-value, conflicting, sensitive or communication-critical evidence.',
-      id: 'Bukti bernilai tinggi, kontradiktif, sensitif, atau kritis untuk komunikasi.',
-    },
-    fieldBurden: { en: 'Very selective', id: 'Sangat selektif' },
+    purpose: 'High-value, conflicting, sensitive or communication-critical evidence.',
+    fieldBurden: 'Very selective',
   },
 ] as const

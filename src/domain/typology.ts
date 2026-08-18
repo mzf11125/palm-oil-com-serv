@@ -18,10 +18,9 @@ import type { PociComponent, PociInput, Typology } from './types'
 export interface TypologyDefinition {
   code: Typology
   /** Short label, English then Indonesian. */
-  en: string
-  id: string
+  label: string
   /** Design doc Table 5 "Ciri" — distinguishing characteristics. */
-  characteristics: { en: string; id: string }
+  characteristics: string
   /** Most relevant ABCD assets for this pathway. */
   relevantAssets: string
 }
@@ -29,72 +28,44 @@ export interface TypologyDefinition {
 export const TYPOLOGY_DEFINITIONS: Record<Typology, TypologyDefinition> = {
   T1: {
     code: 'T1',
-    en: 'Direct Estate-Linked',
-    id: 'Terhubung Langsung dengan Kebun',
-    characteristics: {
-      en: 'Many workers/households linked to the estate or mill; high proximity and access.',
-      id: 'Banyak pekerja/household terkait kebun atau mill; kedekatan dan akses tinggi.',
-    },
+    label: 'Direct Estate-Linked',
+    characteristics: 'Many workers/households linked to the estate or mill; high proximity and access.',
     relevantAssets: 'Human + Economic Assets',
   },
   T2: {
     code: 'T2',
-    en: 'Smallholder/Cooperative-Linked',
-    id: 'Terhubung Pekebun/Koperasi',
-    characteristics: {
-      en: 'Supplier, plasma or cooperative pathway dominant.',
-      id: 'Supplier/plasma/koperasi dominan.',
-    },
+    label: 'Smallholder/Cooperative-Linked',
+    characteristics: 'Supplier, plasma or cooperative pathway dominant.',
     relevantAssets: 'Associational + Economic Assets',
   },
   T3: {
     code: 'T3',
-    en: 'Infrastructure Spillover',
-    id: 'Limpahan Infrastruktur',
-    characteristics: {
-      en: 'Main benefit through roads, bridges, transport, digital or service access.',
-      id: 'Manfaat utama melalui jalan, jembatan, transport, digital/service access.',
-    },
+    label: 'Infrastructure Spillover',
+    characteristics: 'Main benefit through roads, bridges, transport, digital or service access.',
     relevantAssets: 'Physical + Institutional Assets',
   },
   T4: {
     code: 'T4',
-    en: 'Supply-Chain Community',
-    id: 'Komunitas Rantai Pasok',
-    characteristics: {
-      en: 'More distant but strong as FFB supplier, contractor, transport or procurement.',
-      id: 'Lebih jauh tetapi pemasok TBS, contractor, transport atau procurement kuat.',
-    },
+    label: 'Supply-Chain Community',
+    characteristics: 'More distant but strong as FFB supplier, contractor, transport or procurement.',
     relevantAssets: 'Economic + Associational Assets',
   },
   T5: {
     code: 'T5',
-    en: 'Catalytic Service/Market Centre',
-    id: 'Pusat Layanan/Pasar Katalitik',
-    characteristics: {
-      en: 'Workshops, market, food services, banking, accommodation, public services growing.',
-      id: 'Bengkel, market, food services, banking, accommodation, public services berkembang.',
-    },
+    label: 'Catalytic Service/Market Centre',
+    characteristics: 'Workshops, market, food services, banking, accommodation, public services growing.',
     relevantAssets: 'Economic + Institutional Assets',
   },
   T6: {
     code: 'T6',
-    en: 'Mixed Linkage',
-    id: 'Keterhubungan Campuran',
-    characteristics: {
-      en: 'Experiences more than one pathway at high intensity.',
-      id: 'Mengalami lebih dari satu pathway dengan intensitas tinggi.',
-    },
+    label: 'Mixed Linkage',
+    characteristics: 'Experiences more than one pathway at high intensity.',
     relevantAssets: 'Cross-asset mobilization',
   },
   T7: {
     code: 'T7',
-    en: 'Low-Exposure Comparator',
-    id: 'Pembanding Eksposur Rendah',
-    characteristics: {
-      en: 'Reasonably similar baseline but weak palm-oil linkage.',
-      id: 'Baseline cukup serupa tetapi linkage sawit rendah.',
-    },
+    label: 'Low-Exposure Comparator',
+    characteristics: 'Reasonably similar baseline but weak palm-oil linkage.',
     relevantAssets: 'Contextual comparison',
   },
 }

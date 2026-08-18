@@ -37,7 +37,7 @@ export type FindingSeverity = 'error' | 'warning' | 'info'
 export interface PortfolioFinding {
   rule: string
   severity: FindingSeverity
-  message: { en: string; id: string }
+  message: string
 }
 
 export interface PortfolioAssessment {
@@ -71,19 +71,13 @@ export function assessPortfolio(members: PortfolioMember[]): PortfolioAssessment
     findings.push({
       rule: 'exposed-count',
       severity: 'error',
-      message: {
-        en: `${exposed.length} exposed communities selected; the design recommends ${EXPOSED_MIN}-${EXPOSED_MAX} per concession cluster.`,
-        id: `${exposed.length} komunitas exposed dipilih; desain menyarankan ${EXPOSED_MIN}-${EXPOSED_MAX} per concession cluster.`,
-      },
+      message: `${exposed.length} exposed communities selected. The design recommends ${EXPOSED_MIN}-${EXPOSED_MAX} per concession cluster.`,
     })
   } else if (exposed.length > EXPOSED_MAX) {
     findings.push({
       rule: 'exposed-count',
       severity: 'warning',
-      message: {
-        en: `${exposed.length} exposed communities exceeds the indicative maximum of ${EXPOSED_MAX}; check validation capacity.`,
-        id: `${exposed.length} komunitas exposed melebihi maksimum indikatif ${EXPOSED_MAX}; periksa kapasitas validasi.`,
-      },
+      message: `${exposed.length} exposed communities exceeds the indicative maximum of ${EXPOSED_MAX}. Check validation capacity.`,
     })
   }
 
@@ -92,19 +86,13 @@ export function assessPortfolio(members: PortfolioMember[]): PortfolioAssessment
     findings.push({
       rule: 'comparator-required',
       severity: 'error',
-      message: {
-        en: 'No low-exposure comparator selected. At least one is required for contextual comparison.',
-        id: 'Tidak ada pembanding exposure rendah. Minimal satu diperlukan sebagai pembanding kontekstual.',
-      },
+      message: 'No low-exposure comparator selected. At least one is required for contextual comparison.',
     })
   } else if (comparators.length > COMPARATOR_MAX) {
     findings.push({
       rule: 'comparator-count',
       severity: 'warning',
-      message: {
-        en: `${comparators.length} comparators selected; ${COMPARATOR_MIN}-${COMPARATOR_MAX} is the indicative range.`,
-        id: `${comparators.length} pembanding dipilih; ${COMPARATOR_MIN}-${COMPARATOR_MAX} adalah rentang indikatif.`,
-      },
+      message: `${comparators.length} comparators selected. ${COMPARATOR_MIN}-${COMPARATOR_MAX} is the indicative range.`,
     })
   }
 
@@ -114,10 +102,7 @@ export function assessPortfolio(members: PortfolioMember[]): PortfolioAssessment
       findings.push({
         rule: 'comparator-exposure',
         severity: 'warning',
-        message: {
-          en: `${c.villageName} is marked as a comparator but scores POCI ${c.poci}, above the low-exposure range.`,
-          id: `${c.villageName} ditandai sebagai pembanding tetapi memiliki POCI ${c.poci}, di atas rentang exposure rendah.`,
-        },
+        message: `${c.villageName} is marked as a comparator but scores POCI ${c.poci}, above the low-exposure range.`,
       })
     }
   }
@@ -128,19 +113,13 @@ export function assessPortfolio(members: PortfolioMember[]): PortfolioAssessment
     findings.push({
       rule: 'typology-assigned',
       severity: 'error',
-      message: {
-        en: `${untyped.length} exposed community(ies) have no confirmed typology: ${untyped.map((m) => m.villageName).join(', ')}.`,
-        id: `${untyped.length} komunitas exposed belum memiliki tipologi terkonfirmasi: ${untyped.map((m) => m.villageName).join(', ')}.`,
-      },
+      message: `${untyped.length} exposed community(ies) have no confirmed typology: ${untyped.map((m) => m.villageName).join(', ')}.`,
     })
   } else if (distinctTypologies.length < TYPOLOGY_DIVERSITY_MIN) {
     findings.push({
       rule: 'typology-diversity',
       severity: 'warning',
-      message: {
-        en: `Only ${distinctTypologies.length} distinct pathway(s) represented (${distinctTypologies.join(', ')}). The design asks for contribution pathway diversity, not the highest scores.`,
-        id: `Hanya ${distinctTypologies.length} pathway berbeda terwakili (${distinctTypologies.join(', ')}). Desain meminta keragaman jalur kontribusi, bukan skor tertinggi.`,
-      },
+      message: `Only ${distinctTypologies.length} distinct pathway(s) represented (${distinctTypologies.join(', ')}). The design asks for contribution pathway diversity, not the highest scores.`,
     })
   }
 
@@ -149,10 +128,7 @@ export function assessPortfolio(members: PortfolioMember[]): PortfolioAssessment
     findings.push({
       rule: 'undervisible-group',
       severity: 'warning',
-      message: {
-        en: 'No selected community represents a group likely to be invisible to spatial data (independent smallholders, women/youth groups, or a remote community).',
-        id: 'Tidak ada komunitas terpilih yang mewakili kelompok yang berpotensi kurang terlihat oleh data spasial (pekebun swadaya, kelompok perempuan/pemuda, atau komunitas terpencil).',
-      },
+      message: 'No selected community represents a group likely to be invisible to spatial data (independent smallholders, women/youth groups, or a remote community).',
     })
   }
 
@@ -193,10 +169,7 @@ export function detectTopNSelection(
   return {
     rule: 'top-n-selection',
     severity: 'warning',
-    message: {
-      en: `The ${selectedExposed.length} exposed communities are exactly the ${selectedExposed.length} highest POCI scores. The design warns against ranking-led selection: choose for pathway diversity and baseline variation instead.`,
-      id: `${selectedExposed.length} komunitas exposed persis sama dengan ${selectedExposed.length} skor POCI tertinggi. Desain memperingatkan terhadap pemilihan berbasis ranking: pilih berdasarkan keragaman pathway dan variasi baseline.`,
-    },
+    message: `The ${selectedExposed.length} exposed communities are exactly the ${selectedExposed.length} highest POCI scores. The design warns against ranking-led selection. choose for pathway diversity and baseline variation instead.`,
   }
 }
 
@@ -208,66 +181,38 @@ export function detectTopNSelection(
 export const COMPARATOR_CRITERIA = [
   {
     key: 'baseline-remoteness',
-    en: 'Baseline remoteness',
-    id: 'Baseline remoteness',
-    check: {
-      en: 'Travel time and road access before palm-oil development were broadly similar.',
-      id: 'Travel time dan road access sebelum perkembangan sawit relatif serupa.',
-    },
+    label: 'Baseline remoteness',
+    check: 'Travel time and road access before palm-oil development were broadly similar.',
   },
   {
     key: 'population',
-    en: 'Population / settlement',
-    id: 'Populasi / permukiman',
-    check: {
-      en: 'Population scale and settlement pattern are not too different.',
-      id: 'Skala penduduk dan pola permukiman tidak terlalu berbeda.',
-    },
+    label: 'Population / settlement',
+    check: 'Population scale and settlement pattern are not too different.',
   },
   {
     key: 'agroecology',
-    en: 'Agroecology',
-    id: 'Agroekologi',
-    check: {
-      en: 'Topography, land cover, hazard and suitability are reasonably comparable.',
-      id: 'Topografi, land cover, hazard, dan suitability cukup sebanding.',
-    },
+    label: 'Agroecology',
+    check: 'Topography, land cover, hazard and suitability are reasonably comparable.',
   },
   {
     key: 'service-access',
-    en: 'Initial service access',
-    id: 'Akses layanan awal',
-    check: {
-      en: 'Initial access to school, clinic, market and electricity/digital was broadly similar.',
-      id: 'Akses awal sekolah, klinik, pasar, listrik/digital relatif mirip.',
-    },
+    label: 'Initial service access',
+    check: 'Initial access to school, clinic, market and electricity/digital was broadly similar.',
   },
   {
     key: 'administrative',
-    en: 'Administrative context',
-    id: 'Konteks administratif',
-    check: {
-      en: 'Where possible, within a similar district/province policy environment.',
-      id: 'Jika memungkinkan berada dalam district/province policy environment yang serupa.',
-    },
+    label: 'Administrative context',
+    check: 'Where possible, within a similar district/province policy environment.',
   },
   {
     key: 'low-linkage',
-    en: 'Low palm-oil linkage',
-    id: 'Keterhubungan sawit rendah',
-    check: {
-      en: 'Worker, supplier, procurement, programme and road dependence are low.',
-      id: 'Pekerja, supplier, procurement, programme, dan road dependence rendah.',
-    },
+    label: 'Low palm-oil linkage',
+    check: 'Worker, supplier, procurement, programme and road dependence are low.',
   },
   {
     key: 'no-contamination',
-    en: 'No strong contamination',
-    id: 'Tidak ada kontaminasi kuat',
-    check: {
-      en: 'Not on a corridor clearly receiving major spillover from the same concession.',
-      id: 'Tidak berada pada corridor yang jelas menerima spillover utama dari konsesi yang sama.',
-    },
+    label: 'No strong contamination',
+    check: 'Not on a corridor clearly receiving major spillover from the same concession.',
   },
 ] as const
 

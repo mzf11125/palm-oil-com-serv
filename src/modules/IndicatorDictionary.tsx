@@ -14,7 +14,6 @@
 
 import { useMemo, useState } from 'react'
 import { STRINGS } from '@/i18n/strings'
-import { useT } from '@/i18n/useLocale'
 import {
   INDICATORS,
   PILLAR_DEFINITIONS,
@@ -22,7 +21,6 @@ import {
 } from '@/reference/indicators'
 import { Empty } from '@/components/ui'
 import type { EvidenceTier, PillarCode } from '@/domain/types'
-import type { Locale } from '@/i18n/strings'
 
 // Evidence intensity code labels (Table 7)
 const INTENSITY_LABEL: Record<'M' | 'R' | 'S' | 'C' | 'N', string> = {
@@ -67,16 +65,13 @@ function TierPill({ tier }: { tier: EvidenceTier }) {
 
 function IndicatorCard({
   indicator,
-  locale,
   expanded,
   onToggle,
 }: {
   indicator: IndicatorDefinition
-  locale: Locale
   expanded: boolean
   onToggle: () => void
 }) {
-  const { tr } = useT()
 
   // Which tiers have non-N intensity for this indicator?
   const activeTiers = ALL_TIERS.filter((t) => indicator.intensity[t] !== 'N')
@@ -99,7 +94,7 @@ function IndicatorCard({
           >
             {indicator.code}
           </span>
-          <span className="font-medium text-sm truncate">{indicator.name[locale]}</span>
+          <span className="font-medium text-sm truncate">{indicator.name}</span>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           {activeTiers.map((tier) => (
@@ -128,24 +123,24 @@ function IndicatorCard({
           {/* Question */}
           <div>
             <p className="italic" style={{ color: 'var(--text-secondary)' }}>
-              {indicator.question[locale]}
+              {indicator.question}
             </p>
           </div>
 
           {/* Rationale */}
           <div>
             <h4 className="font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>
-              {tr(STRINGS.dictionary.rationale)}
+              {STRINGS.dictionary.rationale}
             </h4>
-            <p style={{ color: 'var(--text-primary)' }}>{indicator.rationale[locale]}</p>
+            <p style={{ color: 'var(--text-primary)' }}>{indicator.rationale}</p>
           </div>
 
           {/* Minimum variables */}
           <div>
             <h4 className="font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>
-              {tr(STRINGS.dictionary.minimumVariables)}
+              {STRINGS.dictionary.minimumVariables}
             </h4>
-            <p style={{ color: 'var(--text-primary)' }}>{indicator.minimumVariables[locale]}</p>
+            <p style={{ color: 'var(--text-primary)' }}>{indicator.minimumVariables}</p>
           </div>
 
           {/* Evidence routes */}
@@ -161,9 +156,9 @@ function IndicatorCard({
               >
                 <div className="flex items-center gap-1.5 mb-1">
                   <TierPill tier="S" />
-                  <span className="font-semibold">{tr(STRINGS.dictionary.secondarySources)}</span>
+                  <span className="font-semibold">{STRINGS.dictionary.secondarySources}</span>
                   <span
-                    className="ml-auto text-[10px] font-mono"
+                    className="ml-auto text-xs font-mono"
                     style={{ color: INTENSITY_TONE[indicator.intensity.S] }}
                   >
                     {INTENSITY_LABEL[indicator.intensity.S]}
@@ -177,91 +172,91 @@ function IndicatorCard({
               </div>
             )}
 
-            {indicator.geoAiSources[locale] && (
+            {indicator.geoAiSources && (
               <div
                 className="rounded border p-2"
                 style={{ background: 'var(--surface-0)', borderColor: 'var(--border)' }}
               >
                 <div className="flex items-center gap-1.5 mb-1">
                   <TierPill tier="G" />
-                  <span className="font-semibold">{tr(STRINGS.dictionary.geoAi)}</span>
+                  <span className="font-semibold">{STRINGS.dictionary.geoAi}</span>
                   <span
-                    className="ml-auto text-[10px] font-mono"
+                    className="ml-auto text-xs font-mono"
                     style={{ color: INTENSITY_TONE[indicator.intensity.G] }}
                   >
                     {INTENSITY_LABEL[indicator.intensity.G]}
                   </span>
                 </div>
-                <p style={{ color: 'var(--text-secondary)' }}>{indicator.geoAiSources[locale]}</p>
+                <p style={{ color: 'var(--text-secondary)' }}>{indicator.geoAiSources}</p>
               </div>
             )}
 
-            {indicator.remoteValidation[locale] && (
+            {indicator.remoteValidation && (
               <div
                 className="rounded border p-2"
                 style={{ background: 'var(--surface-0)', borderColor: 'var(--border)' }}
               >
                 <div className="flex items-center gap-1.5 mb-1">
                   <TierPill tier="P-R" />
-                  <span className="font-semibold">{tr(STRINGS.dictionary.remoteValidation)}</span>
+                  <span className="font-semibold">{STRINGS.dictionary.remoteValidation}</span>
                   <span
-                    className="ml-auto text-[10px] font-mono"
+                    className="ml-auto text-xs font-mono"
                     style={{ color: INTENSITY_TONE[indicator.intensity['P-R']] }}
                   >
                     {INTENSITY_LABEL[indicator.intensity['P-R']]}
                   </span>
                 </div>
-                <p style={{ color: 'var(--text-secondary)' }}>{indicator.remoteValidation[locale]}</p>
+                <p style={{ color: 'var(--text-secondary)' }}>{indicator.remoteValidation}</p>
               </div>
             )}
 
-            {indicator.localVerification[locale] && (
+            {indicator.localVerification && (
               <div
                 className="rounded border p-2"
                 style={{ background: 'var(--surface-0)', borderColor: 'var(--border)' }}
               >
                 <div className="flex items-center gap-1.5 mb-1">
                   <TierPill tier="P-L" />
-                  <span className="font-semibold">{tr(STRINGS.dictionary.localVerification)}</span>
+                  <span className="font-semibold">{STRINGS.dictionary.localVerification}</span>
                   <span
-                    className="ml-auto text-[10px] font-mono"
+                    className="ml-auto text-xs font-mono"
                     style={{ color: INTENSITY_TONE[indicator.intensity['P-L']] }}
                   >
                     {INTENSITY_LABEL[indicator.intensity['P-L']]}
                   </span>
                 </div>
-                <p style={{ color: 'var(--text-secondary)' }}>{indicator.localVerification[locale]}</p>
+                <p style={{ color: 'var(--text-secondary)' }}>{indicator.localVerification}</p>
               </div>
             )}
 
-            {indicator.centralFieldTrigger[locale] && (
+            {indicator.centralFieldTrigger && (
               <div
                 className="rounded border p-2"
                 style={{ background: 'var(--surface-0)', borderColor: 'var(--border)' }}
               >
                 <div className="flex items-center gap-1.5 mb-1">
                   <TierPill tier="P-C" />
-                  <span className="font-semibold">{tr(STRINGS.dictionary.centralField)}</span>
+                  <span className="font-semibold">{STRINGS.dictionary.centralField}</span>
                   <span
-                    className="ml-auto text-[10px] font-mono"
+                    className="ml-auto text-xs font-mono"
                     style={{ color: INTENSITY_TONE[indicator.intensity['P-C']] }}
                   >
                     {INTENSITY_LABEL[indicator.intensity['P-C']]}
                   </span>
                 </div>
-                <p style={{ color: 'var(--text-secondary)' }}>{indicator.centralFieldTrigger[locale]}</p>
+                <p style={{ color: 'var(--text-secondary)' }}>{indicator.centralFieldTrigger}</p>
               </div>
             )}
           </div>
 
           {/* Minimum evidence package */}
-          {indicator.minimumEvidencePackage[locale] && (
+          {indicator.minimumEvidencePackage && (
             <div>
               <h4 className="font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>
                 Minimum evidence package
               </h4>
               <p style={{ color: 'var(--text-primary)' }}>
-                {indicator.minimumEvidencePackage[locale]}
+                {indicator.minimumEvidencePackage}
               </p>
             </div>
           )}
@@ -278,10 +273,10 @@ function IndicatorCard({
               className="font-semibold mb-1"
               style={{ color: 'var(--status-warning-fg)', fontSize: '0.75rem' }}
             >
-              ⚠ {tr(STRINGS.scorecard.interpretiveLimit)}
+              ⚠ {STRINGS.scorecard.interpretiveLimit}
             </h4>
             <p style={{ color: 'var(--status-warning-fg)', fontSize: '0.75rem' }}>
-              {indicator.interpretiveLimit[locale]}
+              {indicator.interpretiveLimit}
             </p>
           </div>
         </div>
@@ -295,13 +290,11 @@ function IndicatorCard({
 function PillarGroup({
   pillarCode,
   indicators,
-  locale,
   expandedSet,
   onToggle,
 }: {
   pillarCode: PillarCode
   indicators: IndicatorDefinition[]
-  locale: Locale
   expandedSet: Set<string>
   onToggle: (code: string) => void
 }) {
@@ -309,20 +302,19 @@ function PillarGroup({
   return (
     <div>
       <div className="mb-2 flex items-baseline gap-2">
-        <h2 className="text-sm font-bold">{pillar.name[locale]}</h2>
+        <h2 className="text-sm font-bold">{pillar.name}</h2>
         <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
           {(pillar.weight * 100).toFixed(0)}%
         </span>
       </div>
       <p className="mb-3 text-xs" style={{ color: 'var(--text-secondary)' }}>
-        {pillar.summary[locale]}
+        {pillar.summary}
       </p>
       <div className="space-y-2">
         {indicators.map((ind) => (
           <IndicatorCard
             key={ind.code}
             indicator={ind}
-            locale={locale}
             expanded={expandedSet.has(ind.code)}
             onToggle={() => onToggle(ind.code)}
           />
@@ -338,7 +330,6 @@ function PillarGroup({
 const PILLAR_ORDER: PillarCode[] = ['HUM', 'ASS', 'INS', 'PSN', 'ECO']
 
 export function IndicatorDictionary() {
-  const { locale, tr } = useT()
   const [search, setSearch] = useState('')
   const [expandedSet, setExpandedSet] = useState<Set<string>>(new Set())
   const [pillarFilter, setPillarFilter] = useState<PillarCode | 'ALL'>('ALL')
@@ -362,10 +353,8 @@ export function IndicatorDictionary() {
       if (q === '') return true
       return (
         ind.code.toLowerCase().includes(q) ||
-        ind.name.en.toLowerCase().includes(q) ||
-        ind.name.id.toLowerCase().includes(q) ||
-        ind.rationale.en.toLowerCase().includes(q) ||
-        ind.rationale.id.toLowerCase().includes(q)
+        ind.name.toLowerCase().includes(q) ||
+        ind.rationale.toLowerCase().includes(q)
       )
     })
   }, [search, pillarFilter])
@@ -384,12 +373,12 @@ export function IndicatorDictionary() {
   const pillarsToShow = PILLAR_ORDER.filter((p) => byPillar.has(p))
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="page space-y-6 p-4 md:p-6">
       {/* Header */}
       <div>
-        <h1 className="text-base font-semibold">{tr(STRINGS.dictionary.title)}</h1>
+        <h1 className="text-base font-semibold">{STRINGS.dictionary.title}</h1>
         <p className="mt-0.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
-          {tr(STRINGS.dictionary.intro)}
+          {STRINGS.dictionary.intro}
         </p>
       </div>
 
@@ -399,8 +388,8 @@ export function IndicatorDictionary() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder={tr(STRINGS.common.search) + ' indicators…'}
-          className="rounded border px-2 py-1.5 text-xs flex-1 min-w-32"
+          placeholder={STRINGS.common.search + ' indicators…'}
+          className="rounded border px-3 py-2 text-xs flex-1 min-w-32"
           style={{
             background: 'var(--surface-1)',
             borderColor: 'var(--border-strong)',
@@ -455,7 +444,6 @@ export function IndicatorDictionary() {
               key={pillarCode}
               pillarCode={pillarCode}
               indicators={byPillar.get(pillarCode)!}
-              locale={locale}
               expandedSet={expandedSet}
               onToggle={toggleExpanded}
             />

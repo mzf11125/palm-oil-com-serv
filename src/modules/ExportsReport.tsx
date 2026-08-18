@@ -13,12 +13,11 @@
 
 import { useRef } from 'react'
 import { STRINGS } from '@/i18n/strings'
-import { useT } from '@/i18n/useLocale'
 import { useProjectStore, assessmentKey } from '@/store/project'
 import { useCase, useSeedScreening, useScreenedVillages } from '@/hooks/useCaseData'
 import { INDICATORS } from '@/reference/indicators'
 import { computeIndicator } from '@/domain/abcd'
-import { PROJECT_SCHEMA_VERSION, type ProjectExport } from '@/store/types'
+import { PROJECT_SCHEMA_VERSION, APPLICATION_ID, type ProjectExport } from '@/store/types'
 import { Panel, MethodNote, Button, Empty, StatTile } from '@/components/ui'
 import type { CaseSummary } from '@/data/types'
 
@@ -58,7 +57,6 @@ export function ExportsReport({
   caseId: string | null
   caseSummary: CaseSummary | null
 }) {
-  const { locale, tr } = useT()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const allCases = useProjectStore((s) => s.cases)
@@ -83,12 +81,12 @@ export function ExportsReport({
     const payload: ProjectExport = {
       schemaVersion: PROJECT_SCHEMA_VERSION,
       exportedAt: new Date().toISOString(),
-      application: 'ABCDS-RF',
+      application: APPLICATION_ID,
       cases: allCases,
     }
     const json = JSON.stringify(payload, null, 2)
     const ts = new Date().toISOString().slice(0, 10)
-    downloadBlob(`abcds-rf-project-${ts}.json`, json, 'application/json')
+    downloadBlob(`abcd-scorecard-project-${ts}.json`, json, 'application/json')
   }
 
   // ── Import: project JSON ──────────────────────────────────────────────
@@ -106,11 +104,11 @@ export function ExportsReport({
           )
           return
         }
-        if (!window.confirm(tr(STRINGS.exports.importWarning))) return
+        if (!window.confirm(STRINGS.exports.importWarning)) return
         const result = importProject(parsed)
         if (!result.ok) alert(`Import failed: ${result.error}`)
       } catch {
-        alert('Could not parse the project file. Make sure it is a valid ABCDS-RF JSON export.')
+        alert('Could not parse the project file. Make sure it is a valid ABCD Scorecard JSON export.')
       }
     }
     reader.readAsText(file)
@@ -211,24 +209,24 @@ export function ExportsReport({
 
   if (!caseId) {
     return (
-      <div className="p-4">
+      <div className="page p-4 md:p-6">
         <Empty>Select a case to access exports.</Empty>
       </div>
     )
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="page space-y-4 p-4 md:p-6">
       {/* Header */}
       <div>
-        <h1 className="text-base font-semibold">{tr(STRINGS.exports.title)}</h1>
+        <h1 className="text-base font-semibold">{STRINGS.exports.title}</h1>
         <p className="mt-0.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
-          {tr(STRINGS.exports.intro)}
+          {STRINGS.exports.intro}
         </p>
       </div>
 
       {/* Summary stats */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6">
         <StatTile label="Villages" value={villages.length} />
         <StatTile label="Screened (POCI)" value={screened} />
         <StatTile label="In portfolio" value={selected} />
@@ -250,18 +248,16 @@ export function ExportsReport({
       )}
 
       {/* Project file */}
-      <Panel title="Project file" subtitle={tr(STRINGS.exports.storageNote)}>
+      <Panel title="Project file" subtitle={STRINGS.exports.storageNote}>
         <MethodNote>
-          {locale === 'id'
-            ? 'localStorage bersifat sementara. Ekspor file proyek secara rutin untuk penyimpanan dan berbagi lintas perangkat.'
-            : 'localStorage is ephemeral. Export the project file regularly to store and share work across devices.'}
+          {'localStorage is ephemeral. Export the project file regularly to store and share work across devices.'}
         </MethodNote>
         <div className="mt-3 flex flex-wrap gap-2">
           <Button onClick={handleExportProject} variant="primary">
-            ↓ {tr(STRINGS.exports.exportProject)}
+            ↓ {STRINGS.exports.exportProject}
           </Button>
           <Button onClick={() => fileInputRef.current?.click()} variant="default">
-            ↑ {tr(STRINGS.exports.importProject)}
+            ↑ {STRINGS.exports.importProject}
           </Button>
           <input
             ref={fileInputRef}
@@ -277,17 +273,17 @@ export function ExportsReport({
       <Panel title="CSV exports" subtitle="For onward analysis in spreadsheets or R/Python.">
         <div className="mt-2 flex flex-wrap gap-2">
           <Button onClick={handleExportPoci} variant="default" disabled={villages.length === 0}>
-            ↓ {tr(STRINGS.exports.exportPoci)}
+            ↓ {STRINGS.exports.exportPoci}
           </Button>
           <Button onClick={handleExportAbcd} variant="default" disabled={selected === 0}>
-            ↓ {tr(STRINGS.exports.exportAbcd)}
+            ↓ {STRINGS.exports.exportAbcd}
           </Button>
           <Button
             onClick={handleExportValidation}
             variant="default"
             disabled={validationItems.length === 0}
           >
-            ↓ {tr(STRINGS.exports.exportValidation)}
+            ↓ {STRINGS.exports.exportValidation}
           </Button>
         </div>
         {selected === 0 && (
@@ -299,19 +295,19 @@ export function ExportsReport({
 
       {/* Print */}
       <Panel
-        title={tr(STRINGS.exports.printReport)}
+        title={STRINGS.exports.printReport}
         subtitle="Prints a summary of the case: POCI scores, portfolio, and ABCD profiles."
       >
         <div className="mt-2">
           <Button onClick={() => window.print()} variant="default">
-            🖨 {tr(STRINGS.exports.printReport)}
+            🖨 {STRINGS.exports.printReport}
           </Button>
         </div>
 
         {/* Print-only content — hidden on screen via CSS, shown at print time */}
         <div className="print-only mt-4 space-y-6">
           <div>
-            <h1 className="text-xl font-bold">ABCDS-RF Assessment Report</h1>
+            <h1 className="text-xl font-bold">sawitAI ABCD Scorecard Assessment Report</h1>
             {caseSummary && (
               <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                 {caseSummary.poCom} · {caseSummary.district}, {caseSummary.province} ·
@@ -341,7 +337,7 @@ export function ExportsReport({
               <tbody>
                 {villages.map((v) => (
                   <tr key={v.villageId} className="border-b" style={{ borderColor: 'var(--border)' }}>
-                    <td className="border px-2 py-1" style={{ borderColor: 'var(--border)' }}>
+                    <td className="border px-3 py-1.5" style={{ borderColor: 'var(--border)' }}>
                       {v.name}
                       {v.screening?.selected && ' ★'}
                       {v.screening?.isComparator && ' ◇'}
@@ -352,14 +348,14 @@ export function ExportsReport({
                         className="border px-2 py-1 text-right"
                         style={{ borderColor: 'var(--border)' }}
                       >
-                        {v.screening?.components[c].value ?? '–'}
+                        {v.screening?.components[c].value ?? '-'}
                       </td>
                     ))}
                     <td
                       className="border px-2 py-1 text-right font-semibold"
                       style={{ borderColor: 'var(--border)' }}
                     >
-                      {v.poci.score != null ? v.poci.score.toFixed(1) : '–'}
+                      {v.poci.score != null ? v.poci.score.toFixed(1) : '-'}
                     </td>
                     <td
                       className="border px-2 py-1 text-right"
@@ -367,13 +363,13 @@ export function ExportsReport({
                     >
                       {v.poci.coverage != null
                         ? (v.poci.coverage * 100).toFixed(0) + '%'
-                        : '–'}
+                        : '-'}
                     </td>
-                    <td className="border px-2 py-1" style={{ borderColor: 'var(--border)' }}>
-                      {v.poci.band ?? '–'}
+                    <td className="border px-3 py-1.5" style={{ borderColor: 'var(--border)' }}>
+                      {v.poci.band ?? '-'}
                     </td>
-                    <td className="border px-2 py-1" style={{ borderColor: 'var(--border)' }}>
-                      {v.typology ?? '–'}
+                    <td className="border px-3 py-1.5" style={{ borderColor: 'var(--border)' }}>
+                      {v.typology ?? '-'}
                     </td>
                   </tr>
                 ))}

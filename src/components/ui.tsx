@@ -32,11 +32,11 @@ export function Panel({
   return (
     <section className={`surface rounded-lg ${className}`}>
       {(title || actions) && (
-        <header className="flex items-start justify-between gap-4 border-b px-4 py-3 hairline">
+        <header className="hairline flex items-start justify-between gap-4 border-b px-5 py-4">
           <div className="min-w-0">
-            {title && <h2 className="text-sm font-semibold leading-tight">{title}</h2>}
+            {title && <h2 className="text-base font-semibold leading-tight">{title}</h2>}
             {subtitle && (
-              <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mt-1 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 {subtitle}
               </p>
             )}
@@ -44,7 +44,7 @@ export function Panel({
           {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
         </header>
       )}
-      <div className="p-4">{children}</div>
+      <div className="p-5">{children}</div>
     </section>
   )
 }
@@ -64,7 +64,7 @@ export function MethodNote({
   const color = tone === 'warning' ? 'var(--status-serious)' : 'var(--accent)'
   return (
     <p
-      className="rounded border-l-2 py-2 pl-3 pr-2 text-xs leading-relaxed"
+      className="rounded border-l-2 py-2.5 pl-3.5 pr-3 text-sm leading-relaxed"
       style={{
         borderColor: color,
         background: tone === 'warning' ? 'rgba(236,131,90,0.08)' : 'var(--accent-soft)',
@@ -79,7 +79,7 @@ export function MethodNote({
 export function Empty({ children }: { children: ReactNode }) {
   return (
     <div
-      className="rounded border border-dashed px-4 py-8 text-center text-sm"
+      className="rounded border border-dashed px-4 py-12 text-center text-sm"
       style={{ borderColor: 'var(--border-strong)', color: 'var(--text-muted)' }}
     >
       {children}
@@ -156,7 +156,7 @@ export function ScoreBar({
   return (
     <div className="flex items-center gap-2">
       {label && (
-        <span className="w-28 shrink-0 truncate text-xs" style={{ color: 'var(--text-secondary)' }}>
+        <span className="w-32 shrink-0 truncate text-sm" style={{ color: 'var(--text-secondary)' }}>
           {label}
         </span>
       )}
@@ -180,7 +180,7 @@ export function ScoreBar({
           />
         )}
       </div>
-      <span className="w-10 shrink-0 text-right text-xs tnum" style={{ color: value === null ? 'var(--na)' : 'var(--text-primary)' }}>
+      <span className="tnum w-10 shrink-0 text-right text-sm" style={{ color: value === null ? 'var(--na)' : 'var(--text-primary)' }}>
         {value === null ? 'NA' : value}
       </span>
     </div>
@@ -205,7 +205,7 @@ export function CoverageMeter({ coverage, showLabel = true }: { coverage: number
         <div className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${pct}%`, background: tone }} />
       </div>
       {showLabel && (
-        <span className="text-xs tnum" style={{ color: 'var(--text-muted)' }}>
+        <span className="tnum text-xs" style={{ color: 'var(--text-muted)' }}>
           {pct}%
         </span>
       )}
@@ -264,7 +264,7 @@ export function Badge({
   }[tone]
   return (
     <span
-      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium leading-4"
+      className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium leading-5"
       style={map}
       title={title}
     >
@@ -295,10 +295,10 @@ export function Button({
   title?: string
 }) {
   const base =
-    size === 'sm' ? 'px-2 py-1 text-xs rounded' : 'px-3 py-1.5 text-sm rounded-md'
+    size === 'sm' ? 'px-2.5 py-1 text-xs rounded min-h-8' : 'px-3.5 py-2 text-sm rounded-md min-h-9'
   const styles = {
     default: { background: 'var(--surface-1)', color: 'var(--text-primary)', border: '1px solid var(--border-strong)' },
-    primary: { background: 'var(--accent)', color: '#fff', border: '1px solid transparent' },
+    primary: { background: 'var(--accent)', color: 'var(--accent-ink)', border: '1px solid transparent' },
     ghost: { background: 'transparent', color: 'var(--text-secondary)', border: '1px solid transparent' },
     danger: { background: 'transparent', color: 'var(--status-critical)', border: '1px solid var(--status-critical)' },
   }[variant]
@@ -330,17 +330,17 @@ export function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 flex items-baseline gap-1.5 text-xs font-medium">
+      <span className="mb-1.5 flex items-baseline gap-1.5 text-sm font-medium">
         {label}
         {required && (
-          <span className="text-[10px] font-normal" style={{ color: 'var(--status-serious)' }}>
+          <span className="text-xs font-normal" style={{ color: 'var(--status-serious)' }}>
             required
           </span>
         )}
       </span>
       {children}
       {hint && (
-        <span className="mt-1 block text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+        <span className="mt-1.5 block text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
           {hint}
         </span>
       )}
@@ -375,7 +375,7 @@ export function TextInput({
       value={value}
       placeholder={placeholder}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-full rounded px-2 py-1.5 text-sm ${className}`}
+      className={`min-h-9 w-full rounded px-2.5 py-1.5 text-sm ${className}`}
       style={controlStyle}
     />
   )
@@ -404,7 +404,7 @@ export function TextArea({
       rows={rows}
       placeholder={placeholder}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full resize-y rounded px-2 py-1.5 text-sm leading-relaxed"
+      className="w-full resize-y rounded px-2.5 py-2 text-sm leading-relaxed"
       style={controlStyle}
     />
   )
@@ -425,7 +425,7 @@ export function Select<T extends string>({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value as T | '')}
-      className="w-full rounded px-2 py-1.5 text-sm"
+      className="min-h-9 w-full rounded px-2.5 py-1.5 text-sm"
       style={controlStyle}
     >
       {placeholder !== undefined && <option value="">{placeholder}</option>}
@@ -448,7 +448,7 @@ export function Checkbox({
   label: ReactNode
 }) {
   return (
-    <label className="flex cursor-pointer items-start gap-2 text-xs leading-relaxed">
+    <label className="flex cursor-pointer items-start gap-2 text-sm leading-relaxed">
       <input
         type="checkbox"
         checked={checked}
@@ -471,13 +471,13 @@ export function StatTile({
   hint?: ReactNode
 }) {
   return (
-    <div className="surface rounded-lg px-3 py-2.5">
-      <div className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
+    <div className="surface rounded-lg px-4 py-3">
+      <div className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
         {label}
       </div>
-      <div className="mt-1 text-2xl font-semibold leading-none">{value}</div>
+      <div className="mt-1.5 text-3xl font-semibold leading-none">{value}</div>
       {hint && (
-        <div className="mt-1 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+        <div className="mt-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
           {hint}
         </div>
       )}

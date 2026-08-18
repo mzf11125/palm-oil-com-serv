@@ -9,7 +9,6 @@
 
 import { useMemo, useState } from 'react'
 import { STRINGS } from '@/i18n/strings'
-import { useT } from '@/i18n/useLocale'
 import { useCase, useSeedScreening, useScreenedVillages, useValidationSync } from '@/hooks/useCaseData'
 import { useProjectStore } from '@/store/project'
 import { TRIGGERS, ASSESSMENT_TIERS } from '@/domain/validation'
@@ -44,7 +43,6 @@ const STATUS_TONE = {
 } as const
 
 export function ValidationQueue({ caseId }: { caseId: string | null }) {
-  const { locale, tr } = useT()
   const { data: caseData, loading } = useCase(caseId)
   useSeedScreening(caseData)
   const villages = useScreenedVillages(caseData)
@@ -90,34 +88,34 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
     return { counts, open, total: derived.length }
   }, [derived, records])
 
-  if (!caseId) return <Empty>{locale === 'id' ? 'Pilih case cluster.' : 'Select a case cluster.'}</Empty>
+  if (!caseId) return <Empty>{'Select a case cluster.'}</Empty>
   if (loading || !caseData) {
-    return <div className="p-6 text-sm" style={{ color: 'var(--text-muted)' }}>{tr(STRINGS.common.loading)}</div>
+    return <div className="page p-6 text-sm" style={{ color: 'var(--text-muted)' }}>{STRINGS.common.loading}</div>
   }
 
   return (
-    <div className="space-y-4 p-4">
-      <Panel title={tr(STRINGS.validation.title)} subtitle={caseData.poCom}>
+    <div className="page space-y-4 p-4 md:p-6">
+      <Panel title={STRINGS.validation.title} subtitle={caseData.poCom}>
         <div className="space-y-3">
-          <MethodNote>{tr(STRINGS.validation.intro)}</MethodNote>
+          <MethodNote>{STRINGS.validation.intro}</MethodNote>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             <StatTile
-              label={locale === 'id' ? 'Total item' : 'Total items'}
+              label={'Total items'}
               value={stats.total}
-              hint={`${stats.open} ${locale === 'id' ? 'terbuka' : 'open'}`}
+              hint={`${stats.open} ${'open'}`}
             />
-            <StatTile label="P-R" value={stats.counts['P-R']} hint={locale === 'id' ? 'remote' : 'remote'} />
-            <StatTile label="P-L" value={stats.counts['P-L']} hint={locale === 'id' ? 'lokal' : 'local'} />
-            <StatTile label="P-C" value={stats.counts['P-C']} hint={locale === 'id' ? 'sentinel' : 'sentinel'} />
-            <StatTile label="—" value={stats.counts.none} hint={locale === 'id' ? 'tanpa eskalasi' : 'no escalation'} />
+            <StatTile label="P-R" value={stats.counts['P-R']} hint={'remote'} />
+            <StatTile label="P-L" value={stats.counts['P-L']} hint={'local'} />
+            <StatTile label="P-C" value={stats.counts['P-C']} hint={'sentinel'} />
+            <StatTile label="None" value={stats.counts.none} hint={'no escalation'} />
           </div>
         </div>
       </Panel>
 
       <Panel
-        title={locale === 'id' ? 'Antrean' : 'Queue'}
-        subtitle={`${rows.length} ${tr(STRINGS.common.of)} ${derived.length}`}
+        title={'Queue'}
+        subtitle={`${rows.length} ${STRINGS.common.of} ${derived.length}`}
         actions={
           <div className="flex gap-2">
             <div className="w-28">
@@ -125,7 +123,7 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
                 value={tierFilter}
                 onChange={(v) => setTierFilter(v)}
                 options={VALIDATION_TIERS.map((t) => ({ value: t, label: t }))}
-                placeholder={`${tr(STRINGS.common.all)} tier`}
+                placeholder={`${STRINGS.common.all} tier`}
               />
             </div>
             <div className="w-32">
@@ -134,16 +132,16 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
                 onChange={(v) => setStatusFilter(v)}
                 options={(['open', 'in-progress', 'resolved', 'dismissed'] as const).map((s) => ({
                   value: s,
-                  label: tr(STRINGS.validation.statuses[s]),
+                  label: STRINGS.validation.statuses[s],
                 }))}
-                placeholder={`${tr(STRINGS.common.all)} status`}
+                placeholder={`${STRINGS.common.all} status`}
               />
             </div>
           </div>
         }
       >
         {rows.length === 0 ? (
-          <Empty>{tr(STRINGS.validation.empty)}</Empty>
+          <Empty>{STRINGS.validation.empty}</Empty>
         ) : (
           <div className="space-y-2">
             {rows.map(({ item, record }) => {
@@ -166,7 +164,7 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
                     className="flex w-full items-start gap-2.5 px-3 py-2.5 text-left"
                   >
                     <Badge tone={TIER_TONE[current.tier]}>
-                      {current.tier === 'none' ? '—' : current.tier}
+                      {current.tier === 'none' ? 'None' : current.tier}
                       {current.tierOverridden && '*'}
                     </Badge>
                     <span className="min-w-0 flex-1">
@@ -174,16 +172,16 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
                         <span className="font-medium">{item.villageName}</span>
                         {item.indicator && (
                           <span style={{ color: 'var(--text-muted)' }}>
-                            {item.indicator} — {INDICATORS_BY_CODE[item.indicator].name[locale]}
+                            {item.indicator} · {INDICATORS_BY_CODE[item.indicator].name}
                           </span>
                         )}
                       </span>
-                      <span className="mt-0.5 block text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                      <span className="mt-0.5 block text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                         {item.detail}
                       </span>
                     </span>
                     <Badge tone={STATUS_TONE[current.status]}>
-                      {tr(STRINGS.validation.statuses[current.status])}
+                      {STRINGS.validation.statuses[current.status]}
                     </Badge>
                     <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                       {isOpen ? '▾' : '▸'}
@@ -193,15 +191,15 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
                   {isOpen && (
                     <div className="space-y-3 border-t px-3 py-3" style={{ borderColor: 'var(--border)' }}>
                       <div>
-                        <span className="text-[11px] font-medium">{tr(STRINGS.validation.trigger)}: </span>
-                        <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
-                          {trigger[locale]}
+                        <span className="text-xs font-medium">{STRINGS.validation.trigger}: </span>
+                        <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                          {trigger.label}
                         </span>
                       </div>
 
                       <div className="grid gap-3 sm:grid-cols-3">
                         <label className="block">
-                          <span className="mb-1 block text-xs font-medium">{tr(STRINGS.validation.tier)}</span>
+                          <span className="mb-1 block text-xs font-medium">{STRINGS.validation.tier}</span>
                           <Select
                             value={current.tier}
                             onChange={(v) => v && setValidationTier(caseId, item.id, v as ValidationTier)}
@@ -209,21 +207,19 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
                               value: t,
                               label:
                                 t === 'none'
-                                  ? locale === 'id'
-                                    ? 'Tanpa eskalasi'
-                                    : 'No escalation'
-                                  : `${t} — ${EVIDENCE_TIER_DEFINITIONS[t].label[locale]}`,
+                                  ? 'No escalation'
+                                  : `${t} · ${EVIDENCE_TIER_DEFINITIONS[t].label}`,
                             }))}
                           />
                           {current.tier !== item.tier && (
-                            <span className="mt-1 block text-[10px]" style={{ color: 'var(--text-muted)' }}>
-                              {locale === 'id' ? 'Default pemicu' : 'Trigger default'}: {item.tier}
+                            <span className="mt-1 block text-xs" style={{ color: 'var(--text-muted)' }}>
+                              {'Trigger default'}: {item.tier}
                             </span>
                           )}
                         </label>
 
                         <label className="block">
-                          <span className="mb-1 block text-xs font-medium">{tr(STRINGS.validation.status)}</span>
+                          <span className="mb-1 block text-xs font-medium">{STRINGS.validation.status}</span>
                           <Select
                             value={current.status}
                             onChange={(v) =>
@@ -231,13 +227,13 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
                             }
                             options={(['open', 'in-progress', 'resolved', 'dismissed'] as const).map((s) => ({
                               value: s,
-                              label: tr(STRINGS.validation.statuses[s]),
+                              label: STRINGS.validation.statuses[s],
                             }))}
                           />
                         </label>
 
                         <label className="block">
-                          <span className="mb-1 block text-xs font-medium">{tr(STRINGS.validation.assignee)}</span>
+                          <span className="mb-1 block text-xs font-medium">{STRINGS.validation.assignee}</span>
                           <TextInput
                             value={current.assignee}
                             onChange={(v) => updateValidation(caseId, item.id, { assignee: v })}
@@ -246,7 +242,7 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
                       </div>
 
                       <label className="block">
-                        <span className="mb-1 block text-xs font-medium">{tr(STRINGS.common.notes)}</span>
+                        <span className="mb-1 block text-xs font-medium">{STRINGS.common.notes}</span>
                         <TextArea
                           value={current.note}
                           onChange={(v) => updateValidation(caseId, item.id, { note: v })}
@@ -257,16 +253,14 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
                       {(current.status === 'resolved' || current.status === 'dismissed') && (
                         <label className="block">
                           <span className="mb-1 block text-xs font-medium">
-                            {tr(STRINGS.validation.resolution)}
+                            {STRINGS.validation.resolution}
                           </span>
                           <TextArea
                             value={current.resolution}
                             onChange={(v) => updateValidation(caseId, item.id, { resolution: v })}
                             rows={2}
                             placeholder={
-                              locale === 'id'
-                                ? 'Bukti apa yang menyelesaikan gap ini?'
-                                : 'What evidence closed this gap?'
+                              'What evidence closed this gap?'
                             }
                           />
                         </label>
@@ -278,14 +272,14 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
                             size="sm"
                             onClick={() => updateValidation(caseId, item.id, { status: 'in-progress' })}
                           >
-                            {locale === 'id' ? 'Mulai' : 'Start'}
+                            {'Start'}
                           </Button>
                           <Button
                             size="sm"
                             variant="ghost"
                             onClick={() => updateValidation(caseId, item.id, { status: 'dismissed' })}
                           >
-                            {locale === 'id' ? 'Tutup' : 'Dismiss'}
+                            {'Dismiss'}
                           </Button>
                         </div>
                       )}
@@ -299,32 +293,30 @@ export function ValidationQueue({ caseId }: { caseId: string | null }) {
       </Panel>
 
       <Panel
-        title={locale === 'id' ? 'Intensitas assessment' : 'Assessment intensity'}
+        title={'Assessment intensity'}
         subtitle={
-          locale === 'id'
-            ? 'Tier A–D sesuai desain remote-first dan targeted validation.'
-            : 'Tiers A–D per the remote-first and targeted-validation design.'
+          'Tiers A-D per the remote-first and targeted-validation design.'
         }
       >
         <div className="table-scroll">
           <table className="w-full text-xs">
             <thead>
               <tr style={{ color: 'var(--text-muted)' }}>
-                <th className="px-2 py-2 text-left font-medium">Tier</th>
-                <th className="px-2 py-2 text-left font-medium">{locale === 'id' ? 'Cakupan' : 'Scope'}</th>
-                <th className="px-2 py-2 text-left font-medium">{locale === 'id' ? 'Bukti' : 'Evidence'}</th>
-                <th className="px-2 py-2 text-left font-medium">{locale === 'id' ? 'Tujuan' : 'Purpose'}</th>
-                <th className="px-2 py-2 text-left font-medium">{locale === 'id' ? 'Beban lapangan' : 'Field burden'}</th>
+                <th className="px-3 py-2.5 text-left font-medium">Tier</th>
+                <th className="px-3 py-2.5 text-left font-medium">{'Scope'}</th>
+                <th className="px-3 py-2.5 text-left font-medium">{'Evidence'}</th>
+                <th className="px-3 py-2.5 text-left font-medium">{'Purpose'}</th>
+                <th className="px-3 py-2.5 text-left font-medium">{'Field burden'}</th>
               </tr>
             </thead>
             <tbody>
               {ASSESSMENT_TIERS.map((t) => (
                 <tr key={t.tier} className="border-t align-top" style={{ borderColor: 'var(--gridline)' }}>
-                  <td className="px-2 py-2 font-medium">{t.tier}</td>
-                  <td className="px-2 py-2">{t.scope[locale]}</td>
-                  <td className="px-2 py-2" style={{ color: 'var(--text-secondary)' }}>{t.evidence}</td>
-                  <td className="px-2 py-2" style={{ color: 'var(--text-secondary)' }}>{t.purpose[locale]}</td>
-                  <td className="px-2 py-2" style={{ color: 'var(--text-muted)' }}>{t.fieldBurden[locale]}</td>
+                  <td className="px-3 py-2.5 font-medium">{t.tier}</td>
+                  <td className="px-3 py-2.5">{t.scope}</td>
+                  <td className="px-3 py-2.5" style={{ color: 'var(--text-secondary)' }}>{t.evidence}</td>
+                  <td className="px-3 py-2.5" style={{ color: 'var(--text-secondary)' }}>{t.purpose}</td>
+                  <td className="px-3 py-2.5" style={{ color: 'var(--text-muted)' }}>{t.fieldBurden}</td>
                 </tr>
               ))}
             </tbody>

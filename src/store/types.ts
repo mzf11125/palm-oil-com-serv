@@ -116,9 +116,16 @@ export interface CaseProject {
 /** Bumped when the persisted shape changes; import checks it. */
 export const PROJECT_SCHEMA_VERSION = 1
 
+/**
+ * Value written into new exports. The former name is still accepted on import
+ * so project files produced before the rename keep opening.
+ */
+export const APPLICATION_ID = 'ABCD-SCORECARD'
+export const LEGACY_APPLICATION_IDS = ['ABCDS-RF'] as const
+
 export interface ProjectExport {
   schemaVersion: number
   exportedAt: string
-  application: 'ABCDS-RF'
+  application: 'ABCD-SCORECARD' | 'ABCDS-RF'
   cases: Record<string, CaseProject>
 }

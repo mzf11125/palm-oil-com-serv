@@ -9,7 +9,6 @@
 
 import { useMemo, useState } from 'react'
 import { STRINGS } from '@/i18n/strings'
-import { useT } from '@/i18n/useLocale'
 import { useCase, useSeedScreening, useScreenedVillages, type ScreenedVillage } from '@/hooks/useCaseData'
 import { useProjectStore } from '@/store/project'
 import { CaseMap, MapLegend } from '@/components/CaseMap'
@@ -41,7 +40,6 @@ import { SOURCES } from '@/reference/sources'
 type SortKey = 'poci' | 'name' | 'distance' | 'population' | 'coverage'
 
 export function PociScreening({ caseId }: { caseId: string | null }) {
-  const { locale, tr } = useT()
   const { data: caseData, loading, error } = useCase(caseId)
   useSeedScreening(caseData)
   const villages = useScreenedVillages(caseData)
@@ -96,11 +94,11 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
     return { evidencedBeyondProximity, selectedCount, bands }
   }, [villages])
 
-  if (!caseId) return <Empty>{locale === 'id' ? 'Pilih case cluster.' : 'Select a case cluster.'}</Empty>
-  if (loading) return <div className="p-6 text-sm" style={{ color: 'var(--text-muted)' }}>{tr(STRINGS.common.loading)}</div>
+  if (!caseId) return <Empty>{'Select a case cluster.'}</Empty>
+  if (loading) return <div className="page p-6 text-sm" style={{ color: 'var(--text-muted)' }}>{STRINGS.common.loading}</div>
   if (error || !caseData) {
     return (
-      <div className="p-4">
+      <div className="page p-4 md:p-6">
         <Empty>
           {error?.message ?? 'Case data unavailable.'}
         </Empty>
@@ -109,32 +107,32 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
   }
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="page space-y-4 p-4 md:p-6">
       <Panel
-        title={`${tr(STRINGS.screening.title)} — ${caseData.poCom}`}
-        subtitle={`${caseData.district}, ${caseData.province} · ${Math.round(caseData.concessionAreaHa).toLocaleString()} ha · ${caseData.villageCount} ${tr(STRINGS.common.villages)} · ${caseData.screeningEnvelopeKm} km envelope`}
+        title={`${STRINGS.screening.title} · ${caseData.poCom}`}
+        subtitle={`${caseData.district}, ${caseData.province} · ${Math.round(caseData.concessionAreaHa).toLocaleString()} ha · ${caseData.villageCount} ${STRINGS.common.villages} · ${caseData.screeningEnvelopeKm} km envelope`}
       >
         <div className="space-y-3">
-          <MethodNote>{tr(STRINGS.screening.intro)}</MethodNote>
-          <MethodNote tone="warning">{tr(STRINGS.screening.missingDataRule)}</MethodNote>
+          <MethodNote>{STRINGS.screening.intro}</MethodNote>
+          <MethodNote tone="warning">{STRINGS.screening.missingDataRule}</MethodNote>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
             <StatTile
-              label={locale === 'id' ? 'Desa kandidat' : 'Candidate villages'}
+              label={'Candidate villages'}
               value={villages.length}
             />
             <StatTile
-              label={locale === 'id' ? 'Dinilai di luar P' : 'Evidenced beyond P'}
+              label={'Evidenced beyond P'}
               value={stats.evidencedBeyondProximity}
-              hint={`${villages.length - stats.evidencedBeyondProximity} ${locale === 'id' ? 'hanya proximity' : 'proximity only'}`}
+              hint={`${villages.length - stats.evidencedBeyondProximity} ${'proximity only'}`}
             />
             <StatTile
-              label={locale === 'id' ? 'Eksposur tinggi' : 'High exposure'}
+              label={'High exposure'}
               value={stats.bands.high}
               hint={`${stats.bands.moderate} moderate · ${stats.bands.low} low`}
             />
             <StatTile
-              label={tr(STRINGS.common.selected)}
+              label={STRINGS.common.selected}
               value={stats.selectedCount}
             />
           </div>
@@ -145,7 +143,7 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
         <div className="space-y-4">
           <Panel
             className="overflow-hidden"
-            title={locale === 'id' ? 'Peta komunitas kandidat' : 'Candidate community map'}
+            title={'Candidate community map'}
           >
             <div className="h-[24rem] overflow-hidden rounded" style={{ border: '1px solid var(--border)' }}>
               <CaseMap
@@ -161,12 +159,12 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
           </Panel>
 
           <Panel
-            title={locale === 'id' ? 'Tabel screening' : 'Screening table'}
-            subtitle={`${tr(STRINGS.common.showing)} ${filtered.length} ${tr(STRINGS.common.of)} ${villages.length}`}
+            title={'Screening table'}
+            subtitle={`${STRINGS.common.showing} ${filtered.length} ${STRINGS.common.of} ${villages.length}`}
             actions={
               <div className="flex items-center gap-2">
                 <div className="w-40">
-                  <TextInput value={query} onChange={setQuery} placeholder={tr(STRINGS.common.search)} />
+                  <TextInput value={query} onChange={setQuery} placeholder={STRINGS.common.search} />
                 </div>
                 <div className="w-32">
                   <Select
@@ -174,10 +172,10 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
                     onChange={(v) => setSort((v || 'poci') as SortKey)}
                     options={[
                       { value: 'poci', label: 'POCI' },
-                      { value: 'name', label: locale === 'id' ? 'Nama' : 'Name' },
-                      { value: 'distance', label: locale === 'id' ? 'Jarak' : 'Distance' },
-                      { value: 'population', label: locale === 'id' ? 'Penduduk' : 'Population' },
-                      { value: 'coverage', label: locale === 'id' ? 'Cakupan' : 'Coverage' },
+                      { value: 'name', label: 'Name' },
+                      { value: 'distance', label: 'Distance' },
+                      { value: 'population', label: 'Population' },
+                      { value: 'coverage', label: 'Coverage' },
                     ]}
                   />
                 </div>
@@ -188,12 +186,12 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
               <Checkbox
                 checked={onlyScored}
                 onChange={setOnlyScored}
-                label={locale === 'id' ? 'Hanya yang dinilai di luar P' : 'Only evidenced beyond P'}
+                label={'Only evidenced beyond P'}
               />
               <Checkbox
                 checked={onlySelected}
                 onChange={setOnlySelected}
-                label={locale === 'id' ? 'Hanya portfolio' : 'Only portfolio'}
+                label={'Only portfolio'}
               />
             </div>
 
@@ -201,18 +199,18 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
               <table className="w-full text-xs">
                 <thead className="sticky top-0 z-10" style={{ background: 'var(--surface-1)' }}>
                   <tr style={{ color: 'var(--text-muted)' }}>
-                    <th className="px-2 py-2 text-left font-medium">{tr(STRINGS.common.village)}</th>
-                    <th className="px-2 py-2 text-right font-medium">km</th>
-                    <th className="px-2 py-2 text-right font-medium">{tr(STRINGS.common.population)}</th>
+                    <th className="px-3 py-2.5 text-left font-medium">{STRINGS.common.village}</th>
+                    <th className="px-3 py-2.5 text-right font-medium">km</th>
+                    <th className="px-3 py-2.5 text-right font-medium">{STRINGS.common.population}</th>
                     {POCI_COMPONENTS.map((c) => (
-                      <th key={c} className="px-2 py-2 text-right font-medium" title={c}>
+                      <th key={c} className="px-3 py-2.5 text-right font-medium" title={c}>
                         {c}
                       </th>
                     ))}
-                    <th className="px-2 py-2 text-right font-medium">POCI</th>
-                    <th className="px-2 py-2 text-left font-medium">{tr(STRINGS.common.coverage)}</th>
-                    <th className="px-2 py-2 text-center font-medium">C</th>
-                    <th className="px-2 py-2 text-left font-medium">{tr(STRINGS.common.typology)}</th>
+                    <th className="px-3 py-2.5 text-right font-medium">POCI</th>
+                    <th className="px-3 py-2.5 text-left font-medium">{STRINGS.common.coverage}</th>
+                    <th className="px-3 py-2.5 text-center font-medium">C</th>
+                    <th className="px-3 py-2.5 text-left font-medium">{STRINGS.common.typology}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -229,7 +227,7 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
                           background: isActive ? 'var(--accent-soft)' : undefined,
                         }}
                       >
-                        <td className="px-2 py-1.5">
+                        <td className="px-3 py-2">
                           <div className="flex items-center gap-1.5">
                             {v.screening?.selected && (
                               <span
@@ -240,25 +238,25 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
                             )}
                             <span className="font-medium">{p.VILLAGE_NAME}</span>
                           </div>
-                          <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                          <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
                             {p.SUBDISTRICT_NAME}
                           </div>
                         </td>
-                        <td className="px-2 py-1.5 text-right tnum">{p.DIST_TO_CONCESSION_KM.toFixed(1)}</td>
-                        <td className="px-2 py-1.5 text-right tnum">{p.POPULATION.toLocaleString()}</td>
+                        <td className="px-3 py-2 text-right tnum">{p.DIST_TO_CONCESSION_KM.toFixed(1)}</td>
+                        <td className="px-3 py-2 text-right tnum">{p.POPULATION.toLocaleString()}</td>
                         {POCI_COMPONENTS.map((c) => {
                           const value = v.screening?.components[c].value ?? null
                           return (
                             <td
                               key={c}
-                              className="px-2 py-1.5 text-right tnum"
+                              className="px-3 py-2 text-right tnum"
                               style={{ color: value === null ? 'var(--na)' : undefined }}
                             >
                               {value === null ? 'NA' : value}
                             </td>
                           )
                         })}
-                        <td className="px-2 py-1.5 text-right">
+                        <td className="px-3 py-2 text-right">
                           <span
                             className="font-semibold tnum"
                             style={{ color: v.poci.band ? BAND_COLOR[v.poci.band] : 'var(--na)' }}
@@ -266,15 +264,15 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
                             {v.poci.score ?? 'NA'}
                           </span>
                         </td>
-                        <td className="px-2 py-1.5">
+                        <td className="px-3 py-2">
                           <CoverageMeter coverage={v.poci.coverage} />
                         </td>
-                        <td className="px-2 py-1.5 text-center">
+                        <td className="px-3 py-2 text-center">
                           <ConfidenceBadge grade={v.confidence} overridden={v.confidenceOverridden} />
                         </td>
-                        <td className="px-2 py-1.5">
+                        <td className="px-3 py-2">
                           {v.typology ? (
-                            <Badge tone="accent" title={TYPOLOGY_DEFINITIONS[v.typology][locale]}>
+                            <Badge tone="accent" title={TYPOLOGY_DEFINITIONS[v.typology].label}>
                               {v.typology}
                             </Badge>
                           ) : v.suggestion.code ? (
@@ -282,7 +280,7 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
                               {v.suggestion.code}?
                             </Badge>
                           ) : (
-                            <span style={{ color: 'var(--na)' }}>—</span>
+                            <span style={{ color: 'var(--na)' }}>·</span>
                           )}
                         </td>
                       </tr>
@@ -298,11 +296,9 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
           {selected ? (
             <VillageScoringPanel caseId={caseId} village={selected} />
           ) : (
-            <Panel title={tr(STRINGS.screening.componentEntry)}>
+            <Panel title={STRINGS.screening.componentEntry}>
               <Empty>
-                {locale === 'id'
-                  ? 'Pilih desa pada peta atau tabel untuk memberi skor komponen.'
-                  : 'Select a village on the map or table to score its components.'}
+                {'Select a village on the map or table to score its components.'}
               </Empty>
             </Panel>
           )}
@@ -317,7 +313,6 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
 // ---------------------------------------------------------------------------
 
 function VillageScoringPanel({ caseId, village }: { caseId: string; village: ScreenedVillage }) {
-  const { locale, tr } = useT()
   const setPociComponent = useProjectStore((s) => s.setPociComponent)
   const setTypology = useProjectStore((s) => s.setTypology)
   const updateScreening = useProjectStore((s) => s.updateScreening)
@@ -333,12 +328,12 @@ function VillageScoringPanel({ caseId, village }: { caseId: string; village: Scr
       >
         <div className="mb-3 grid grid-cols-3 gap-2 text-xs">
           {[
-            [tr(STRINGS.common.distance), `${p.DIST_TO_CONCESSION_KM.toFixed(1)} km`],
-            [tr(STRINGS.common.population), p.POPULATION.toLocaleString()],
-            [tr(STRINGS.common.households), p.HOUSEHOLDS.toLocaleString()],
+            [STRINGS.common.distance, `${p.DIST_TO_CONCESSION_KM.toFixed(1)} km`],
+            [STRINGS.common.population, p.POPULATION.toLocaleString()],
+            [STRINGS.common.households, p.HOUSEHOLDS.toLocaleString()],
           ].map(([label, value]) => (
             <div key={label}>
-              <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
+              <div className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
                 {label}
               </div>
               <div className="mt-0.5 font-medium tnum">{value}</div>
@@ -351,15 +346,15 @@ function VillageScoringPanel({ caseId, village }: { caseId: string; village: Scr
           style={{ background: 'var(--surface-sunken)' }}
         >
           <div>
-            <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
-              {tr(STRINGS.screening.provisional)}
+            <div className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
+              {STRINGS.screening.provisional}
             </div>
             <Score value={village.poci.score} size="lg" />
           </div>
           <div className="text-right">
             {village.poci.band && (
               <Badge tone="accent">
-                {tr(STRINGS.exposureBands[village.poci.band])}
+                {STRINGS.exposureBands[village.poci.band]}
               </Badge>
             )}
             <div className="mt-1.5 flex items-center justify-end gap-2">
@@ -370,25 +365,23 @@ function VillageScoringPanel({ caseId, village }: { caseId: string; village: Scr
         </div>
 
         {village.poci.band === 'unbanded' && (
-          <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--status-serious)' }}>
-            {locale === 'id'
-              ? 'Skor 30–39 tidak tercakup band manapun dalam dokumen sumber (≥70 tinggi, 40–69 sedang, <30 rendah). Tetapkan klasifikasi secara eksplisit.'
-              : 'Scores of 30–39 fall in no band defined by the source documents (≥70 high, 40–69 moderate, <30 low). Assign a classification explicitly.'}
+          <p className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--status-serious)' }}>
+            {'Scores of 30-39 fall in no band defined by the source documents (≥70 high, 40-69 moderate, <30 low). Assign a classification explicitly.'}
           </p>
         )}
 
         {village.poci.economicLinkageMissing && (
           <div className="mt-2">
-            <MethodNote tone="warning">{tr(STRINGS.screening.economicMissing)}</MethodNote>
+            <MethodNote tone="warning">{STRINGS.screening.economicMissing}</MethodNote>
           </div>
         )}
 
-        <p className="mt-3 text-[11px]" style={{ color: 'var(--text-muted)' }}>
+        <p className="mt-3 text-xs" style={{ color: 'var(--text-muted)' }}>
           {village.confidenceRationale}
         </p>
       </Panel>
 
-      <Panel title={tr(STRINGS.screening.componentEntry)}>
+      <Panel title={STRINGS.screening.componentEntry}>
         <div className="space-y-4">
           {POCI_COMPONENT_DEFINITIONS.map((def) => (
             <ComponentEditor
@@ -405,7 +398,7 @@ function VillageScoringPanel({ caseId, village }: { caseId: string; village: Scr
         </div>
       </Panel>
 
-      <Panel title={tr(STRINGS.common.typology)}>
+      <Panel title={STRINGS.common.typology}>
         <div className="space-y-3">
           {village.suggestion.code && (
             <div
@@ -414,13 +407,13 @@ function VillageScoringPanel({ caseId, village }: { caseId: string; village: Scr
             >
               <div className="min-w-0 text-xs">
                 <div className="font-medium">
-                  {tr(STRINGS.common.suggestion)}: {village.suggestion.code} —{' '}
-                  {TYPOLOGY_DEFINITIONS[village.suggestion.code][locale]}
+                  {STRINGS.common.suggestion}: {village.suggestion.code} ·{' '}
+                  {TYPOLOGY_DEFINITIONS[village.suggestion.code].label}
                 </div>
                 <p className="mt-0.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                   {village.suggestion.rationale}
                   {!village.suggestion.confident &&
-                    (locale === 'id' ? ' (kepercayaan rendah)' : ' (low confidence)')}
+                    (' (low confidence)')}
                 </p>
               </div>
               {village.typology !== village.suggestion.code && (
@@ -428,18 +421,16 @@ function VillageScoringPanel({ caseId, village }: { caseId: string; village: Scr
                   size="sm"
                   onClick={() => setTypology(caseId, village.villageId, village.suggestion.code)}
                 >
-                  {tr(STRINGS.common.accept)}
+                  {STRINGS.common.accept}
                 </Button>
               )}
             </div>
           )}
 
           <Field
-            label={locale === 'id' ? 'Tipologi terkonfirmasi' : 'Confirmed typology'}
+            label={'Confirmed typology'}
             hint={
-              locale === 'id'
-                ? 'Saran tidak pernah diterapkan otomatis; analis yang mengonfirmasi.'
-                : 'A suggestion is never auto-applied; the analyst confirms.'
+              'A suggestion is never auto-applied. The analyst confirms.'
             }
           >
             <Select
@@ -447,39 +438,37 @@ function VillageScoringPanel({ caseId, village }: { caseId: string; village: Scr
               onChange={(v) => setTypology(caseId, village.villageId, (v || null) as Typology | null)}
               options={TYPOLOGIES.map((t) => ({
                 value: t,
-                label: `${t} — ${TYPOLOGY_DEFINITIONS[t][locale]}`,
+                label: `${t} — ${TYPOLOGY_DEFINITIONS[t]}`,
               }))}
-              placeholder={tr(STRINGS.common.notAssessed)}
+              placeholder={STRINGS.common.notAssessed}
             />
           </Field>
 
           {village.typology && (
-            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              {TYPOLOGY_DEFINITIONS[village.typology].characteristics[locale]}
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+              {TYPOLOGY_DEFINITIONS[village.typology].characteristics}
             </p>
           )}
 
-          <Field label={tr(STRINGS.common.notes)}>
+          <Field label={STRINGS.common.notes}>
             <TextArea
               value={screening?.typologyNote ?? ''}
               onChange={(v) => updateScreening(caseId, village.villageId, { typologyNote: v })}
               rows={2}
               placeholder={
-                locale === 'id' ? 'Alasan penetapan tipologi…' : 'Reasoning for the typology…'
+                'Reasoning for the typology…'
               }
             />
           </Field>
         </div>
       </Panel>
 
-      <Panel title={tr(STRINGS.common.confidence)}>
+      <Panel title={STRINGS.common.confidence}>
         <div className="space-y-3">
           <Field
-            label={locale === 'id' ? 'Override confidence' : 'Confidence override'}
+            label={'Confidence override'}
             hint={
-              locale === 'id'
-                ? 'Confidence dilaporkan terpisah dari skor. Override dicatat sebagai keputusan analis.'
-                : 'Confidence is reported separately from the score. An override is recorded as an analyst decision.'
+              'Confidence is reported separately from the score. An override is recorded as an analyst decision.'
             }
           >
             <Select
@@ -490,12 +479,12 @@ function VillageScoringPanel({ caseId, village }: { caseId: string; village: Scr
                 })
               }
               options={CONFIDENCE_GRADES.map((g) => ({ value: g, label: g }))}
-              placeholder={`${tr(STRINGS.common.proposed)}: ${village.confidence}`}
+              placeholder={`${STRINGS.common.proposed}: ${village.confidence}`}
             />
           </Field>
 
           {screening?.confidenceOverride && (
-            <Field label={locale === 'id' ? 'Alasan override' : 'Override reason'} required>
+            <Field label={'Override reason'} required>
               <TextArea
                 value={screening.confidenceOverrideReason}
                 onChange={(v) =>
@@ -506,7 +495,7 @@ function VillageScoringPanel({ caseId, village }: { caseId: string; village: Scr
             </Field>
           )}
 
-          <Field label={tr(STRINGS.common.notes)}>
+          <Field label={STRINGS.common.notes}>
             <TextArea
               value={screening?.notes ?? ''}
               onChange={(v) => updateScreening(caseId, village.villageId, { notes: v })}
@@ -540,7 +529,6 @@ function ComponentEditor({
   distanceKm: number
   onChange: ReturnType<typeof useProjectStore.getState>['setPociComponent']
 }) {
-  const { locale, tr } = useT()
   const [expanded, setExpanded] = useState(false)
   const [helperInput, setHelperInput] = useState('')
 
@@ -557,15 +545,15 @@ function ComponentEditor({
         className="flex w-full items-center gap-2 px-2.5 py-2 text-left"
       >
         <span
-          className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-[11px] font-bold"
+          className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-xs font-bold"
           style={{ background: 'var(--surface-sunken)', color: 'var(--text-secondary)' }}
         >
           {component}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-xs font-medium">{definition.name[locale]}</span>
-          <span className="block text-[10px]" style={{ color: 'var(--text-muted)' }}>
-            {locale === 'id' ? 'bobot' : 'weight'} {definition.weight}
+          <span className="block truncate text-xs font-medium">{definition.name}</span>
+          <span className="block text-xs" style={{ color: 'var(--text-muted)' }}>
+            {'weight'} {definition.weight}
           </span>
         </span>
         <Score value={value} size="sm" />
@@ -576,19 +564,19 @@ function ComponentEditor({
 
       {expanded && (
         <div className="space-y-3 border-t px-2.5 py-3" style={{ borderColor: 'var(--border)' }}>
-          <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            {definition.definition[locale]}
+          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            {definition.definition}
           </p>
-          <p className="text-[11px] italic leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-            {definition.note[locale]}
+          <p className="text-xs italic leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+            {definition.note}
           </p>
 
           <div
-            className="rounded px-2 py-1.5 text-[11px] leading-relaxed"
+            className="rounded px-3 py-2 text-xs leading-relaxed"
             style={{ background: 'var(--surface-sunken)', color: 'var(--text-secondary)' }}
           >
-            <span className="font-medium">{tr(STRINGS.screening.rubric)}: </span>
-            {definition.rubric[locale]}
+            <span className="font-medium">{STRINGS.screening.rubric}: </span>
+            {definition.rubric}
           </div>
 
           {/* Rubric helpers: P and N have measurable inputs, so the app can
@@ -596,7 +584,7 @@ function ComponentEditor({
           {component === 'P' && (
             <div className="flex items-end gap-2">
               <div className="flex-1">
-                <Field label={locale === 'id' ? 'Jarak (km)' : 'Distance (km)'}>
+                <Field label={'Distance (km)'}>
                   <TextInput
                     value={helperInput || String(distanceKm.toFixed(2))}
                     onChange={setHelperInput}
@@ -616,7 +604,7 @@ function ComponentEditor({
                   })
                 }}
               >
-                {locale === 'id' ? 'Terapkan' : 'Apply'}
+                {'Apply'}
               </Button>
             </div>
           )}
@@ -624,7 +612,7 @@ function ComponentEditor({
           {component === 'N' && (
             <div className="flex items-end gap-2">
               <div className="flex-1">
-                <Field label={locale === 'id' ? 'Travel time (menit)' : 'Travel time (minutes)'}>
+                <Field label={'Travel time (minutes)'}>
                   <TextInput value={helperInput} onChange={setHelperInput} type="number" />
                 </Field>
               </div>
@@ -641,12 +629,12 @@ function ComponentEditor({
                   })
                 }}
               >
-                {locale === 'id' ? 'Terapkan' : 'Apply'}
+                {'Apply'}
               </Button>
             </div>
           )}
 
-          <Field label={locale === 'id' ? 'Skor (0–100)' : 'Score (0–100)'}>
+          <Field label={'Score (0-100)'}>
             <div className="flex items-center gap-2">
               <input
                 type="range"
@@ -670,7 +658,7 @@ function ComponentEditor({
                 size="sm"
                 variant={value === null ? 'primary' : 'ghost'}
                 onClick={() => set({ value: null })}
-                title={tr(STRINGS.common.naFull)}
+                title={STRINGS.common.naFull}
               >
                 NA
               </Button>
@@ -684,24 +672,22 @@ function ComponentEditor({
           )}
 
           <Field
-            label={tr(STRINGS.common.evidenceNote)}
+            label={STRINGS.common.evidenceNote}
             required={value !== null}
-            hint={noteMissing ? tr(STRINGS.screening.noteRequired) : undefined}
+            hint={noteMissing ? STRINGS.screening.noteRequired : undefined}
           >
             <TextArea
               value={entry?.note ?? ''}
               onChange={(v) => set({ note: v })}
               rows={2}
               placeholder={
-                locale === 'id'
-                  ? 'Bukti apa yang mendasari skor ini?'
-                  : 'What evidence supports this score?'
+                'What evidence supports this score?'
               }
             />
           </Field>
 
           <div>
-            <span className="mb-1 block text-xs font-medium">{tr(STRINGS.common.tiers)}</span>
+            <span className="mb-1 block text-xs font-medium">{STRINGS.common.tiers}</span>
             <div className="flex flex-wrap gap-1">
               {EVIDENCE_TIERS.map((tier) => {
                 const active = entry?.tiers.includes(tier) ?? false
@@ -715,12 +701,12 @@ function ComponentEditor({
                           : [...(entry?.tiers ?? []), tier],
                       })
                     }
-                    className="rounded px-1.5 py-0.5 text-[11px] font-medium"
+                    className="rounded px-1.5 py-0.5 text-xs font-medium"
                     style={{
                       background: active ? 'var(--accent)' : 'var(--surface-sunken)',
                       color: active ? '#fff' : 'var(--text-secondary)',
                     }}
-                    title={EVIDENCE_TIER_DEFINITIONS[tier].definition[locale]}
+                    title={EVIDENCE_TIER_DEFINITIONS[tier].definition}
                   >
                     {tier}
                   </button>
@@ -729,7 +715,7 @@ function ComponentEditor({
             </div>
           </div>
 
-          <Field label={tr(STRINGS.common.sources)}>
+          <Field label={STRINGS.common.sources}>
             <Select
               value=""
               onChange={(v) => {
@@ -737,8 +723,8 @@ function ComponentEditor({
                   set({ sources: [...(entry?.sources ?? []), v] })
                 }
               }}
-              options={SOURCES.map((s) => ({ value: s.id, label: `${s.id} — ${s.name}` }))}
-              placeholder={locale === 'id' ? 'Tambah sumber…' : 'Add source…'}
+              options={SOURCES.map((s) => ({ value: s.id, label: `${s.id} · ${s.name}` }))}
+              placeholder={'Add source…'}
             />
           </Field>
 
@@ -748,7 +734,7 @@ function ComponentEditor({
                 <button
                   key={id}
                   onClick={() => set({ sources: entry!.sources.filter((s) => s !== id) })}
-                  title={locale === 'id' ? 'Hapus' : 'Remove'}
+                  title={'Remove'}
                 >
                   <Badge tone="neutral">{id} ×</Badge>
                 </button>

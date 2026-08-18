@@ -167,14 +167,14 @@ export function CaseMap({
 /** Legend for the map's fill encoding, including the NA hatch. */
 export function MapLegend() {
   const stops = [
-    { label: '80–100', color: 'var(--seq-700)' },
-    { label: '60–79', color: 'var(--seq-500)' },
-    { label: '40–59', color: 'var(--seq-450)' },
-    { label: '20–39', color: 'var(--seq-400)' },
-    { label: '0–19', color: 'var(--seq-250)' },
+    { label: '80-100', color: 'var(--seq-700)' },
+    { label: '60-79', color: 'var(--seq-500)' },
+    { label: '40-59', color: 'var(--seq-450)' },
+    { label: '20-39', color: 'var(--seq-400)' },
+    { label: '0-19', color: 'var(--seq-250)' },
   ]
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
       <span className="font-medium">POCI</span>
       {stops.map((s) => (
         <span key={s.label} className="flex items-center gap-1">
@@ -190,7 +190,7 @@ export function MapLegend() {
             border: '1px solid var(--na)',
           }}
         />
-        NA — not evidenced
+        NA, not evidenced
       </span>
     </div>
   )

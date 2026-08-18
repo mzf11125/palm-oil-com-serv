@@ -12,53 +12,35 @@ import type { ConfidenceGrade, EvidenceTier } from './types'
 
 export interface ConfidenceDefinition {
   grade: ConfidenceGrade
-  meaning: { en: string; id: string }
-  use: { en: string; id: string }
+  meaning: string
+  use: string
 }
 
 export const CONFIDENCE_DEFINITIONS: Record<ConfidenceGrade, ConfidenceDefinition> = {
   A: {
     grade: 'A',
-    meaning: { en: 'Strong triangulation', id: 'Triangulasi kuat' },
-    use: {
-      en: 'Multiple independent and appropriate sources; major contradictions resolved; validation adequate.',
-      id: 'Beberapa sumber independen dan sesuai; kontradiksi utama terselesaikan; validasi memadai.',
-    },
+    meaning: 'Strong triangulation',
+    use: 'Multiple independent and appropriate sources; major contradictions resolved; validation adequate.',
   },
   B: {
     grade: 'B',
-    meaning: { en: 'Credible and broadly consistent', id: 'Kredibel dan konsisten secara umum' },
-    use: {
-      en: 'More than one credible source with minor limitations; sufficient for most external reporting with caveats.',
-      id: 'Lebih dari satu sumber kredibel dengan keterbatasan minor; cukup untuk pelaporan eksternal dengan catatan.',
-    },
+    meaning: 'Credible and broadly consistent',
+    use: 'More than one credible source with minor limitations; sufficient for most external reporting with caveats.',
   },
   C: {
     grade: 'C',
-    meaning: { en: 'Moderate evidence', id: 'Bukti moderat' },
-    use: {
-      en: 'Material limitations, partial validation, or unresolved coverage gaps.',
-      id: 'Keterbatasan material, validasi parsial, atau gap cakupan yang belum terselesaikan.',
-    },
+    meaning: 'Moderate evidence',
+    use: 'Material limitations, partial validation, or unresolved coverage gaps.',
   },
   D: {
     grade: 'D',
-    meaning: {
-      en: 'Preliminary / single-source / contradictory',
-      id: 'Preliminer / sumber tunggal / kontradiktif',
-    },
-    use: {
-      en: 'Insufficient independent verification; not suitable for headline external claim.',
-      id: 'Verifikasi independen tidak cukup; tidak layak untuk klaim eksternal utama.',
-    },
+    meaning: 'Preliminary / single-source / contradictory',
+    use: 'Insufficient independent verification; not suitable for headline external claim.',
   },
   NA: {
     grade: 'NA',
-    meaning: { en: 'Insufficient evidence', id: 'Bukti tidak cukup' },
-    use: {
-      en: 'Data are missing or cannot support responsible scoring.',
-      id: 'Data hilang atau tidak dapat mendukung penilaian yang bertanggung jawab.',
-    },
+    meaning: 'Insufficient evidence',
+    use: 'Data are missing or cannot support responsible scoring.',
   },
 }
 

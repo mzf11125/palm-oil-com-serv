@@ -1,9 +1,9 @@
 {
-  "name": "abcds-rf",
+  "name": "abcd-scorecard",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "ABCDS-RF Digital Application — POCI site selection and ABCD Scorecard for palm-oil community development assessment (CPOPC Output 11)",
+  "description": "sawitAI ABCD Scorecard. POCI site selection and ABCD Scorecard for palm-oil community development assessment (CPOPC Output 11)",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

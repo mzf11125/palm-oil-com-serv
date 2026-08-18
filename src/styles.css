@@ -21,6 +21,11 @@
 :root {
   color-scheme: light;
 
+  /* Widest the working area is allowed to get. The modules are data-dense and
+     benefit from width, but unbounded full-bleed pushes table rows and prose
+     past a readable measure on a wide monitor. */
+  --content-max: 96rem;
+
   /* Surfaces and ink */
   --surface-1: #fcfcfb;
   --surface-page: #f9f9f7;
@@ -60,8 +65,29 @@
   --na: #898781;
   --na-fill: rgba(137, 135, 129, 0.14);
 
-  --accent: #2a78d6;
-  --accent-soft: rgba(42, 120, 214, 0.1);
+  /* Brand green, sampled from the sawitAI palm mark (#67a006).
+     --accent is darkened to #4a7304 so it clears 4.5:1 both as text on the page
+     surface (5.46:1) and behind white text (5.61:1). The raw logo green only
+     reaches 3.1:1, so it is reserved for --accent-fill, which is decorative
+     only (underlines, meter fills) and never carries text.
+     --accent-ink is whatever text colour is legible ON an accent fill. */
+  --accent: #4a7304;
+  --accent-fill: #67a006;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(103, 160, 6, 0.12);
+
+  /* Paired foreground/background tints for pills and callouts. The base
+     --status-* hues are tuned as fills and are far too light to sit as text on
+     a light surface (#fab219 is only 1.79:1), so the -fg variants are darkened
+     to clear 4.5:1 while the -bg variants stay as low-alpha tints. */
+  --surface-0: var(--surface-sunken);
+  --status-accent-fg: var(--accent);
+  --status-accent-bg: var(--accent-soft);
+  --status-warning-fg: #8a5a00;
+  --status-warning-bg: rgba(250, 178, 25, 0.16);
+  --status-critical-fg: #b02525;
+  --status-critical-bg: rgba(208, 59, 59, 0.12);
+  --warning: var(--status-warning);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -92,8 +118,17 @@
     --band-low: #184f95;
 
     --success-text: #0ca30c;
-    --accent: #3987e5;
-    --accent-soft: rgba(57, 135, 229, 0.16);
+    /* Lighter brand green for dark surfaces: 8.54:1 as text on --surface-1.
+       White text on this fill would be unreadable, so --accent-ink flips dark. */
+    --accent: #8ec63f;
+    --accent-fill: #8ec63f;
+    --accent-ink: #0d0d0d;
+    --accent-soft: rgba(142, 198, 63, 0.16);
+
+    --status-warning-fg: #fab219;
+    --status-warning-bg: rgba(250, 178, 25, 0.18);
+    --status-critical-fg: #ef8a8a;
+    --status-critical-bg: rgba(208, 59, 59, 0.22);
   }
 }
 
@@ -124,8 +159,15 @@
   --band-low: #184f95;
 
   --success-text: #0ca30c;
-  --accent: #3987e5;
-  --accent-soft: rgba(57, 135, 229, 0.16);
+  --accent: #8ec63f;
+  --accent-fill: #8ec63f;
+  --accent-ink: #0d0d0d;
+  --accent-soft: rgba(142, 198, 63, 0.16);
+
+  --status-warning-fg: #fab219;
+  --status-warning-bg: rgba(250, 178, 25, 0.18);
+  --status-critical-fg: #ef8a8a;
+  --status-critical-bg: rgba(208, 59, 59, 0.22);
 }
 
 html,
@@ -155,6 +197,55 @@ body {
 
 .hairline {
   border-color: var(--border);
+}
+
+/* Centred working column. Applied to the CONTENTS of the header, nav and each
+   module, never to the bars themselves, so borders and backgrounds still run
+   full bleed while the content stays at a readable measure. */
+.page {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+}
+
+/* Logo swap. The theme is driven by a data-theme attribute as well as the OS
+   preference, and a media query alone cannot see the attribute, so both marks
+   are rendered and toggled with the same three-way rule the tokens use. */
+.logo-on-dark {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme='light'])) .logo-on-light {
+    display: none;
+  }
+  :root:where(:not([data-theme='light'])) .logo-on-dark {
+    display: block;
+  }
+}
+:root[data-theme='dark'] .logo-on-light {
+  display: none;
+}
+:root[data-theme='dark'] .logo-on-dark {
+  display: block;
+}
+
+/* The module tab strip scrolls on narrow screens. The fade on the trailing
+   edge is the only affordance signalling there are more tabs off-screen. */
+.tab-scroll {
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+.tab-scroll::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 63.99rem) {
+  .tab-scroll {
+    mask-image: linear-gradient(to right, #000 0, #000 88%, transparent 100%);
+  }
+}
+.tab-scroll > * {
+  scroll-snap-align: start;
 }
 
 /* Focus ring that survives both themes. */
@@ -206,6 +297,32 @@ body {
 }
 
 @media print {
+  /* Paper is always white. Without this the dark theme's tokens survive into
+     the printout and every panel renders as a black box. Resetting the tokens
+     themselves fixes all surfaces at once, since components read them through
+     inline styles rather than utility classes. */
+  :root,
+  :root[data-theme='dark'] {
+    color-scheme: light;
+    --surface-1: #fff;
+    --surface-page: #fff;
+    --surface-sunken: #f2f2ef;
+    --surface-0: #f2f2ef;
+    --text-primary: #000;
+    --text-secondary: #333;
+    --text-muted: #595959;
+    --gridline: #ddd;
+    --baseline: #bbb;
+    --border: rgba(0, 0, 0, 0.2);
+    --border-strong: rgba(0, 0, 0, 0.35);
+    --accent: #4a7304;
+    --accent-fill: #67a006;
+    --accent-ink: #fff;
+    --accent-soft: rgba(103, 160, 6, 0.12);
+    --status-warning-fg: #8a5a00;
+    --status-critical-fg: #b02525;
+  }
+
   .no-print {
     display: none !important;
   }
@@ -218,5 +335,12 @@ body {
   }
   .surface {
     border: 1px solid #ccc;
+  }
+  /* Print is always on white, so the dark-theme white-text mark would vanish. */
+  .logo-on-dark {
+    display: none !important;
+  }
+  .logo-on-light {
+    display: block !important;
   }
 }

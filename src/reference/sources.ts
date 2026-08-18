@@ -378,12 +378,11 @@ export const SOURCES_BY_ID: Record<string, SourceDefinition> = Object.fromEntrie
 )
 
 export const SOURCE_REGIONS = [
-  { key: 'IDN' as const, en: 'Indonesia', id: 'Indonesia' },
-  { key: 'MYS' as const, en: 'Malaysia', id: 'Malaysia' },
-  { key: 'GLOBAL' as const, en: 'Global GeoAI & Geospatial', id: 'GeoAI & Geospasial Global' },
+  { key: 'IDN' as const, label: 'Indonesia' },
+  { key: 'MYS' as const, label: 'Malaysia' },
+  { key: 'GLOBAL' as const, label: 'Global GeoAI & Geospatial' },
   {
     key: 'OPERATIONAL' as const,
-    en: 'Administrative & Operational Requests',
-    id: 'Permintaan Administratif & Operasional',
+    label: 'Administrative & Operational Requests',
   },
 ]

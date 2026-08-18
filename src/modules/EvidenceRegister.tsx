@@ -12,7 +12,6 @@
 
 import { useMemo, useState } from 'react'
 import { STRINGS } from '@/i18n/strings'
-import { useT } from '@/i18n/useLocale'
 import { useProjectStore } from '@/store/project'
 import { SOURCES, type SourceDefinition } from '@/reference/sources'
 import {
@@ -89,7 +88,6 @@ function CatalogRow({
   onAdd: (sourceId: string) => void
   existing: boolean
 }) {
-  const { tr } = useT()
   return (
     <div
       className="flex items-start gap-3 border-b py-2.5 last:border-0"
@@ -102,7 +100,7 @@ function CatalogRow({
           </span>
           {source.restricted && (
             <Badge tone="warning">
-              {tr(STRINGS.evidence.restricted)}
+              {STRINGS.evidence.restricted}
             </Badge>
           )}
         </div>
@@ -137,7 +135,6 @@ function RecordForm({
   onChange: (updated: EvidenceRecord) => void
   onRemove: () => void
 }) {
-  const { tr } = useT()
   const source = SOURCES.find((s) => s.id === record.sourceId)
 
   const field = <K extends keyof EvidenceRecord>(key: K, value: EvidenceRecord[K]) =>
@@ -181,18 +178,18 @@ function RecordForm({
       {/* Row 1 */}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         <TextInput
-          label={tr(STRINGS.evidence.owner)}
+          label={STRINGS.evidence.owner}
           value={record.owner}
           onChange={(v) => field('owner', v)}
         />
         <TextInput
-          label={tr(STRINGS.evidence.period)}
+          label={STRINGS.evidence.period}
           value={record.period}
           onChange={(v) => field('period', v)}
           placeholder="e.g. 2024"
         />
         <TextInput
-          label={tr(STRINGS.evidence.geography)}
+          label={STRINGS.evidence.geography}
           value={record.geography}
           onChange={(v) => field('geography', v)}
           placeholder="e.g. kabupaten"
@@ -204,7 +201,7 @@ function RecordForm({
           placeholder="CSV, shapefile…"
         />
         <TextInput
-          label={tr(STRINGS.evidence.accessRestriction)}
+          label={STRINGS.evidence.accessRestriction}
           value={record.accessRestriction}
           onChange={(v) => field('accessRestriction', v)}
         />
@@ -223,7 +220,7 @@ function RecordForm({
             className="block text-xs font-medium mb-1"
             style={{ color: 'var(--text-secondary)' }}
           >
-            {tr(STRINGS.evidence.completeness)}
+            {STRINGS.evidence.completeness}
           </label>
           <div className="flex gap-1 items-center">
             <Select
@@ -241,7 +238,7 @@ function RecordForm({
             className="block text-xs font-medium mb-1"
             style={{ color: 'var(--text-secondary)' }}
           >
-            {tr(STRINGS.evidence.sensitivity)}
+            {STRINGS.evidence.sensitivity}
           </label>
           <Select
             value={record.sensitivity}
@@ -256,7 +253,7 @@ function RecordForm({
           placeholder="CC BY 4.0…"
         />
         <TextInput
-          label={tr(STRINGS.evidence.permittedUse)}
+          label={STRINGS.evidence.permittedUse}
           value={record.permittedUse}
           onChange={(v) => field('permittedUse', v)}
         />
@@ -282,7 +279,7 @@ function RecordForm({
           onChange={(v) => field('qualityFlag', v)}
         />
         <TextInput
-          label={tr(STRINGS.common.notes)}
+          label={STRINGS.common.notes}
           value={record.notes}
           onChange={(v) => field('notes', v)}
         />
@@ -294,7 +291,6 @@ function RecordForm({
 // ─── Main ──────────────────────────────────────────────────────────────────
 
 export function EvidenceRegister({ caseId }: { caseId: string | null }) {
-  const { locale, tr } = useT()
   const [catalogSearch, setCatalogSearch] = useState('')
   const [regionFilter, setRegionFilter] = useState<'ALL' | 'IDN' | 'MYS' | 'GLOBAL' | 'OPERATIONAL'>('ALL')
   const [tab, setTab] = useState<'catalog' | 'register'>('catalog')
@@ -329,20 +325,20 @@ export function EvidenceRegister({ caseId }: { caseId: string | null }) {
 
   if (!caseId) {
     return (
-      <div className="p-4">
+      <div className="page p-4 md:p-6">
         <Empty>Select a case to manage evidence records.</Empty>
       </div>
     )
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="page space-y-4 p-4 md:p-6">
       {/* Header + tab toggle */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-base font-semibold">{tr(STRINGS.evidence.title)}</h1>
+          <h1 className="text-base font-semibold">{STRINGS.evidence.title}</h1>
           <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
-            {tr(STRINGS.evidence.intro)}
+            {STRINGS.evidence.intro}
           </p>
         </div>
         <div
@@ -359,7 +355,7 @@ export function EvidenceRegister({ caseId }: { caseId: string | null }) {
                 color: tab === t ? '#fff' : 'var(--text-secondary)',
               }}
             >
-              {t === 'catalog' ? tr(STRINGS.evidence.catalog) : tr(STRINGS.evidence.register)}
+              {t === 'catalog' ? STRINGS.evidence.catalog : STRINGS.evidence.register}
             </button>
           ))}
         </div>
@@ -368,7 +364,7 @@ export function EvidenceRegister({ caseId }: { caseId: string | null }) {
       {/* Source Catalog */}
       {tab === 'catalog' && (
         <Panel
-          title={tr(STRINGS.evidence.catalog)}
+          title={STRINGS.evidence.catalog}
           subtitle="Click + to create an acquisition record for this case."
         >
           <div className="mb-3 flex flex-wrap gap-2">
@@ -376,7 +372,7 @@ export function EvidenceRegister({ caseId }: { caseId: string | null }) {
               label=""
               value={catalogSearch}
               onChange={setCatalogSearch}
-              placeholder={tr(STRINGS.common.search) + ' sources…'}
+              placeholder={STRINGS.common.search + ' sources…'}
               className="flex-1 min-w-32"
             />
             <Select
@@ -414,7 +410,7 @@ export function EvidenceRegister({ caseId }: { caseId: string | null }) {
       {/* Acquisition Register */}
       {tab === 'register' && (
         <Panel
-          title={tr(STRINGS.evidence.register)}
+          title={STRINGS.evidence.register}
           subtitle="Acquisition status, quality flags and metadata for every dataset used."
           actions={
             <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
@@ -423,14 +419,12 @@ export function EvidenceRegister({ caseId }: { caseId: string | null }) {
           }
         >
           <MethodNote>
-            {locale === 'id'
-              ? 'Setiap dataset yang digunakan dalam analysis harus memiliki catatan di sini — termasuk sumber-sumber yang ditolak atau tidak dapat diakses. Absensi adalah bukti.'
-              : 'Every dataset used in the analysis must have a record here — including sources that were refused or inaccessible. Absence is itself evidence.'}
+            {'Every dataset used in the analysis must have a record here, including sources that were refused or inaccessible. Absence is itself evidence.'}
           </MethodNote>
 
           {evidenceRecords.length === 0 ? (
             <div className="mt-3">
-              <Empty>{tr(STRINGS.evidence.empty)}</Empty>
+              <Empty>{STRINGS.evidence.empty}</Empty>
             </div>
           ) : (
             <div className="space-y-2 mt-3">
@@ -447,7 +441,7 @@ export function EvidenceRegister({ caseId }: { caseId: string | null }) {
 
           <div className="mt-3 flex justify-end">
             <Button onClick={() => setTab('catalog')} variant="default" size="sm">
-              + {tr(STRINGS.evidence.addRecord)}
+              + {STRINGS.evidence.addRecord}
             </Button>
           </div>
         </Panel>

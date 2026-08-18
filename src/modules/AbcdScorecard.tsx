@@ -9,7 +9,6 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { STRINGS } from '@/i18n/strings'
-import { useT } from '@/i18n/useLocale'
 import { useCase, useSeedScreening, useScreenedVillages, useVillageAssessment } from '@/hooks/useCaseData'
 import { useProjectStore, assessmentKey } from '@/store/project'
 import {
@@ -48,7 +47,6 @@ import { SOURCES } from '@/reference/sources'
 import { PILLAR_INDICATORS } from '@/domain/abcd'
 
 export function AbcdScorecard({ caseId }: { caseId: string | null }) {
-  const { locale, tr } = useT()
   const { data: caseData, loading } = useCase(caseId)
   useSeedScreening(caseData)
   const villages = useScreenedVillages(caseData)
@@ -69,25 +67,25 @@ export function AbcdScorecard({ caseId }: { caseId: string | null }) {
   const assessment = useVillageAssessment(caseId, villageId)
   const village = selected.find((v) => v.villageId === villageId) ?? null
 
-  if (!caseId) return <Empty>{locale === 'id' ? 'Pilih case cluster.' : 'Select a case cluster.'}</Empty>
+  if (!caseId) return <Empty>{'Select a case cluster.'}</Empty>
   if (loading || !caseData) {
-    return <div className="p-6 text-sm" style={{ color: 'var(--text-muted)' }}>{tr(STRINGS.common.loading)}</div>
+    return <div className="page p-6 text-sm" style={{ color: 'var(--text-muted)' }}>{STRINGS.common.loading}</div>
   }
 
   if (selected.length === 0) {
     return (
-      <div className="p-4">
-        <Panel title={tr(STRINGS.scorecard.title)}>
-          <Empty>{tr(STRINGS.scorecard.noPortfolio)}</Empty>
+      <div className="page p-4 md:p-6">
+        <Panel title={STRINGS.scorecard.title}>
+          <Empty>{STRINGS.scorecard.noPortfolio}</Empty>
         </Panel>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="page space-y-4 p-4 md:p-6">
       <Panel
-        title={tr(STRINGS.scorecard.title)}
+        title={STRINGS.scorecard.title}
         subtitle={caseData.poCom}
         actions={
           <Select
@@ -101,22 +99,20 @@ export function AbcdScorecard({ caseId }: { caseId: string | null }) {
         }
       >
         <div className="space-y-3">
-          <MethodNote>{tr(STRINGS.scorecard.intro)}</MethodNote>
-          <MethodNote tone="warning">{tr(STRINGS.scorecard.contributionSeparate)}</MethodNote>
+          <MethodNote>{STRINGS.scorecard.intro}</MethodNote>
+          <MethodNote tone="warning">{STRINGS.scorecard.contributionSeparate}</MethodNote>
         </div>
       </Panel>
 
       {!village || !assessment ? (
-        <Empty>{tr(STRINGS.scorecard.selectVillage)}</Empty>
+        <Empty>{STRINGS.scorecard.selectVillage}</Empty>
       ) : (
         <>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
             <Panel
-              title={`${village.name} — ${tr(STRINGS.scorecard.pillarProfile)}`}
+              title={`${village.name} · ${STRINGS.scorecard.pillarProfile}`}
               subtitle={
-                locale === 'id'
-                  ? `${assessment.scoredCount} dari 15 indikator dinilai`
-                  : `${assessment.scoredCount} of 15 indicators scored`
+                `${assessment.scoredCount} of 15 indicators scored`
               }
             >
               {/* Pillar scores are magnitudes on a common 0-100 scale, so a
@@ -127,11 +123,11 @@ export function AbcdScorecard({ caseId }: { caseId: string | null }) {
                   <div key={p.pillar}>
                     <div className="mb-1 flex items-baseline justify-between gap-2">
                       <span className="text-xs font-medium">
-                        {PILLAR_DEFINITIONS[p.pillar].name[locale]}
+                        {PILLAR_DEFINITIONS[p.pillar].name}
                       </span>
-                      <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                         {p.scoredIndicators}/{p.totalIndicators}{' '}
-                        {locale === 'id' ? 'indikator' : 'indicators'}
+                        {'indicators'}
                       </span>
                     </div>
                     <ScoreBar value={p.score} height={10} />
@@ -143,7 +139,7 @@ export function AbcdScorecard({ caseId }: { caseId: string | null }) {
                 <Checkbox
                   checked={showComposite}
                   onChange={setShowComposite}
-                  label={tr(STRINGS.scorecard.showComposite)}
+                  label={STRINGS.scorecard.showComposite}
                 />
                 {showComposite && (
                   <div className="mt-2 space-y-2">
@@ -151,15 +147,11 @@ export function AbcdScorecard({ caseId }: { caseId: string | null }) {
                       <Score value={assessment.composite.score} size="lg" />
                       <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                         {assessment.composite.complete
-                          ? locale === 'id'
-                            ? 'semua indikator dinilai'
-                            : 'all indicators scored'
-                          : locale === 'id'
-                            ? 'BELUM LENGKAP — rata-rata atas bukti yang tidak merata'
-                            : 'INCOMPLETE — averaging over uneven evidence'}
+                          ? 'all indicators scored'
+                          : 'INCOMPLETE, averaging over uneven evidence'}
                       </span>
                     </div>
-                    <MethodNote tone="warning">{tr(STRINGS.scorecard.compositeCaveat)}</MethodNote>
+                    <MethodNote tone="warning">{STRINGS.scorecard.compositeCaveat}</MethodNote>
                   </div>
                 )}
               </div>
@@ -171,15 +163,15 @@ export function AbcdScorecard({ caseId }: { caseId: string | null }) {
                 value={village.poci.score ?? 'NA'}
                 hint={
                   village.typology
-                    ? `${village.typology} · ${village.poci.band ?? '—'}`
-                    : village.poci.band ?? '—'
+                    ? `${village.typology} · ${village.poci.band ?? 'None'}`
+                    : village.poci.band ?? 'None'
                 }
               />
               <StatTile
-                label={locale === 'id' ? 'Indikator dinilai' : 'Indicators scored'}
+                label={'Indicators scored'}
                 value={`${assessment.scoredCount}/15`}
               />
-              <Panel title={locale === 'id' ? 'Ringkasan kontribusi' : 'Contribution summary'}>
+              <Panel title={'Contribution summary'}>
                 <ContributionSummary caseId={caseId} villageId={village.villageId} />
               </Panel>
             </div>
@@ -199,7 +191,7 @@ export function AbcdScorecard({ caseId }: { caseId: string | null }) {
                       className="flex w-full items-center gap-2 text-left"
                     >
                       <span style={{ color: 'var(--text-muted)' }}>{isOpen ? '▾' : '▸'}</span>
-                      <span>{def.name[locale]}</span>
+                      <span>{def.name}</span>
                       <Badge tone="neutral">{Math.round(def.weight * 100)}%</Badge>
                       <span className="ml-auto flex items-center gap-2 text-xs font-normal">
                         <Score value={pillarResult.score} size="sm" />
@@ -209,7 +201,7 @@ export function AbcdScorecard({ caseId }: { caseId: string | null }) {
                       </span>
                     </button>
                   }
-                  subtitle={isOpen ? def.summary[locale] : undefined}
+                  subtitle={isOpen ? def.summary : undefined}
                 >
                   {isOpen && (
                     <div className="space-y-3">
@@ -239,7 +231,6 @@ export function AbcdScorecard({ caseId }: { caseId: string | null }) {
 // ---------------------------------------------------------------------------
 
 function ContributionSummary({ caseId, villageId }: { caseId: string; villageId: string }) {
-  const { locale } = useT()
   const assessments = useProjectStore((s) => s.cases[caseId]?.assessments)
 
   const counts = useMemo(() => {
@@ -254,9 +245,7 @@ function ContributionSummary({ caseId, villageId }: { caseId: string; villageId:
   if (counts.length === 0) {
     return (
       <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-        {locale === 'id'
-          ? 'Belum ada kategori kontribusi yang ditetapkan.'
-          : 'No contribution categories assigned yet.'}
+        {'No contribution categories assigned yet.'}
       </p>
     )
   }
@@ -265,7 +254,7 @@ function ContributionSummary({ caseId, villageId }: { caseId: string; villageId:
     <ul className="space-y-1.5 text-xs">
       {counts.map(([category, count]) => (
         <li key={category} className="flex items-center justify-between gap-2">
-          <span>{CONTRIBUTION_DEFINITIONS[category].label[locale]}</span>
+          <span>{CONTRIBUTION_DEFINITIONS[category].label}</span>
           <span className="tnum" style={{ color: 'var(--text-muted)' }}>
             {count}
           </span>
@@ -296,7 +285,6 @@ function IndicatorCard({
     assessment: ReturnType<typeof useVillageAssessment> extends null ? never : any
   }
 }) {
-  const { locale, tr } = useT()
   const [expanded, setExpanded] = useState(false)
   const def = INDICATORS_BY_CODE[indicator]
 
@@ -317,9 +305,9 @@ function IndicatorCard({
       <button onClick={open} className="flex w-full items-center gap-3 px-3 py-2.5 text-left">
         <Badge tone="neutral">{indicator}</Badge>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-xs font-medium">{def.name[locale]}</span>
-          <span className="block truncate text-[10px]" style={{ color: 'var(--text-muted)' }}>
-            {def.question[locale]}
+          <span className="block truncate text-xs font-medium">{def.name}</span>
+          <span className="block truncate text-xs" style={{ color: 'var(--text-muted)' }}>
+            {def.question}
           </span>
         </span>
         <span className="flex shrink-0 items-center gap-2">
@@ -338,35 +326,35 @@ function IndicatorCard({
               inputs — it is the document's own warning about what this score
               does not establish, and it only works if it is read first. */}
           <MethodNote tone="warning">
-            <span className="font-semibold">{tr(STRINGS.scorecard.interpretiveLimit)}: </span>
-            {def.interpretiveLimit[locale]}
+            <span className="font-semibold">{STRINGS.scorecard.interpretiveLimit}: </span>
+            {def.interpretiveLimit}
           </MethodNote>
 
-          <details className="text-[11px]">
+          <details className="text-xs">
             <summary className="cursor-pointer font-medium" style={{ color: 'var(--text-secondary)' }}>
-              {tr(STRINGS.dictionary.rationale)}, {tr(STRINGS.dictionary.minimumVariables)},{' '}
-              {tr(STRINGS.scorecard.minimumEvidence)}
+              {STRINGS.dictionary.rationale}, {STRINGS.dictionary.minimumVariables},{' '}
+              {STRINGS.scorecard.minimumEvidence}
             </summary>
             <div className="mt-2 space-y-2 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
               <p>
-                <span className="font-medium">{tr(STRINGS.dictionary.rationale)}: </span>
-                {def.rationale[locale]}
+                <span className="font-medium">{STRINGS.dictionary.rationale}: </span>
+                {def.rationale}
               </p>
               <p>
-                <span className="font-medium">{tr(STRINGS.dictionary.minimumVariables)}: </span>
-                {def.minimumVariables[locale]}
+                <span className="font-medium">{STRINGS.dictionary.minimumVariables}: </span>
+                {def.minimumVariables}
               </p>
               <p>
-                <span className="font-medium">{tr(STRINGS.scorecard.minimumEvidence)}: </span>
-                {def.minimumEvidencePackage[locale]}
+                <span className="font-medium">{STRINGS.scorecard.minimumEvidence}: </span>
+                {def.minimumEvidencePackage}
               </p>
               <p>
-                <span className="font-medium">{tr(STRINGS.dictionary.secondarySources)}: </span>
+                <span className="font-medium">{STRINGS.dictionary.secondarySources}: </span>
                 {def.secondarySources.join(', ')}
               </p>
               <p>
-                <span className="font-medium">{tr(STRINGS.dictionary.remoteValidation)}: </span>
-                {def.remoteValidation[locale]}
+                <span className="font-medium">{STRINGS.dictionary.remoteValidation}: </span>
+                {def.remoteValidation}
               </p>
             </div>
           </details>
@@ -379,18 +367,18 @@ function IndicatorCard({
                 <div key={comp.code}>
                   <div className="mb-1 flex items-baseline gap-2">
                     <span
-                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-[11px] font-bold"
+                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-xs font-bold"
                       style={{ background: 'var(--surface-sunken)', color: 'var(--text-secondary)' }}
                     >
                       {comp.code}
                     </span>
-                    <span className="min-w-0 flex-1 text-xs font-medium">{comp.name[locale]}</span>
-                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                    <span className="min-w-0 flex-1 text-xs font-medium">{comp.name}</span>
+                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                       {Math.round(comp.weight * 100)}%
                     </span>
                   </div>
-                  <p className="mb-1.5 text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                    {comp.question[locale]}
+                  <p className="mb-1.5 text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                    {comp.question}
                   </p>
                   <div className="flex flex-wrap gap-1">
                     {RATING_ANCHORS.map((anchor) => {
@@ -401,12 +389,12 @@ function IndicatorCard({
                           onClick={() =>
                             setAbcdComponent(caseId, villageId, indicator, comp.code as AbcdComponent, anchor.value)
                           }
-                          className="rounded px-2 py-1 text-[11px] font-medium"
+                          className="rounded px-2 py-1 text-xs font-medium"
                           style={{
                             background: active ? 'var(--accent)' : 'var(--surface-sunken)',
                             color: active ? '#fff' : 'var(--text-secondary)',
                           }}
-                          title={anchor[locale]}
+                          title={anchor.label}
                         >
                           {anchor.value}
                         </button>
@@ -416,18 +404,18 @@ function IndicatorCard({
                       onClick={() =>
                         setAbcdComponent(caseId, villageId, indicator, comp.code as AbcdComponent, null)
                       }
-                      className="rounded px-2 py-1 text-[11px] font-medium"
+                      className="rounded px-2 py-1 text-xs font-medium"
                       style={{
                         background: value === null ? 'var(--na)' : 'var(--surface-sunken)',
                         color: value === null ? '#fff' : 'var(--na)',
                       }}
-                      title={tr(STRINGS.common.naFull)}
+                      title={STRINGS.common.naFull}
                     >
                       NA
                     </button>
                     {value !== null && (
-                      <span className="ml-1 self-center text-[11px]" style={{ color: 'var(--text-muted)' }}>
-                        {RATING_ANCHORS.find((r) => r.value === value)?.[locale]}
+                      <span className="ml-1 self-center text-xs" style={{ color: 'var(--text-muted)' }}>
+                        {RATING_ANCHORS.find((r) => r.value === value)?.label}
                       </span>
                     )}
                   </div>
@@ -440,7 +428,7 @@ function IndicatorCard({
             className="flex items-center justify-between rounded px-3 py-2"
             style={{ background: 'var(--surface-sunken)' }}
           >
-            <span className="text-xs font-medium">{tr(STRINGS.common.score)}</span>
+            <span className="text-xs font-medium">{STRINGS.common.score}</span>
             <div className="flex items-center gap-3">
               <CoverageMeter coverage={result.coverage} />
               <Score value={result.score} />
@@ -449,7 +437,7 @@ function IndicatorCard({
 
           {/* Evidence tiers and sources */}
           <div>
-            <span className="mb-1 block text-xs font-medium">{tr(STRINGS.common.tiers)}</span>
+            <span className="mb-1 block text-xs font-medium">{STRINGS.common.tiers}</span>
             <div className="flex flex-wrap gap-1">
               {EVIDENCE_TIERS.map((tier) => {
                 const active = a?.tiers?.includes(tier) ?? false
@@ -464,13 +452,13 @@ function IndicatorCard({
                           : [...(a?.tiers ?? []), tier],
                       })
                     }
-                    className="rounded px-1.5 py-0.5 text-[11px] font-medium"
+                    className="rounded px-1.5 py-0.5 text-xs font-medium"
                     style={{
                       background: active ? 'var(--accent)' : 'var(--surface-sunken)',
                       color: active ? '#fff' : 'var(--text-secondary)',
                       opacity: intensity === 'N' ? 0.45 : 1,
                     }}
-                    title={`${EVIDENCE_TIER_DEFINITIONS[tier].definition[locale]} — default intensity: ${intensity}`}
+                    title={`${EVIDENCE_TIER_DEFINITIONS[tier].definition} Default intensity: ${intensity}`}
                   >
                     {tier}
                     <span className="ml-1 opacity-70">{intensity}</span>
@@ -478,12 +466,12 @@ function IndicatorCard({
                 )
               })}
             </div>
-            <p className="mt-1 text-[10px]" style={{ color: 'var(--text-muted)' }}>
+            <p className="mt-1 text-xs" style={{ color: 'var(--text-muted)' }}>
               M = main · R = required · S = supporting · C = conditional · N = not normally required
             </p>
           </div>
 
-          <Field label={tr(STRINGS.common.sources)}>
+          <Field label={STRINGS.common.sources}>
             <Select
               value=""
               onChange={(v) => {
@@ -493,8 +481,8 @@ function IndicatorCard({
                   })
                 }
               }}
-              options={SOURCES.map((s) => ({ value: s.id, label: `${s.id} — ${s.name}` }))}
-              placeholder={locale === 'id' ? 'Tambah sumber…' : 'Add source…'}
+              options={SOURCES.map((s) => ({ value: s.id, label: `${s.id} · ${s.name}` }))}
+              placeholder={'Add source…'}
             />
           </Field>
           {(a?.sources?.length ?? 0) > 0 && (
@@ -517,11 +505,9 @@ function IndicatorCard({
           {/* Contribution — the separate layer */}
           <div className="rounded border px-2.5 py-2" style={{ borderColor: 'var(--border)' }}>
             <Field
-              label={tr(STRINGS.scorecard.contribution)}
+              label={STRINGS.scorecard.contribution}
               hint={
-                locale === 'id'
-                  ? 'Dinilai terpisah; tidak memengaruhi skor kekuatan aset.'
-                  : 'Assessed separately; does not affect the asset-strength score.'
+                'Assessed separately. It does not affect the asset-strength score.'
               }
             >
               <Select
@@ -533,18 +519,18 @@ function IndicatorCard({
                 }
                 options={CONTRIBUTION_CATEGORIES.map((c) => ({
                   value: c,
-                  label: CONTRIBUTION_DEFINITIONS[c].label[locale],
+                  label: CONTRIBUTION_DEFINITIONS[c].label,
                 }))}
-                placeholder={tr(STRINGS.common.notAssessed)}
+                placeholder={STRINGS.common.notAssessed}
               />
             </Field>
             {a?.contribution && (
-              <p className="mt-1.5 text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                {CONTRIBUTION_DEFINITIONS[a.contribution as ContributionCategory].definition[locale]}
+              <p className="mt-1.5 text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                {CONTRIBUTION_DEFINITIONS[a.contribution as ContributionCategory].definition}
               </p>
             )}
             <div className="mt-2">
-              <Field label={locale === 'id' ? 'Catatan atribusi' : 'Attribution note'}>
+              <Field label={'Attribution note'}>
                 <TextArea
                   value={a?.contributionNote ?? ''}
                   onChange={(v) =>
@@ -552,9 +538,7 @@ function IndicatorCard({
                   }
                   rows={2}
                   placeholder={
-                    locale === 'id'
-                      ? 'Kronologi, pembiayaan, aktor pelaksana, penjelasan alternatif…'
-                      : 'Chronology, financing, implementing actor, alternative explanations…'
+                    'Chronology, financing, implementing actor, alternative explanations…'
                   }
                 />
               </Field>
@@ -562,14 +546,14 @@ function IndicatorCard({
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label={tr(STRINGS.scorecard.beneficiaries)}>
+            <Field label={STRINGS.scorecard.beneficiaries}>
               <TextArea
                 value={a?.beneficiaries ?? ''}
                 onChange={(v) => updateAssessment(caseId, villageId, indicator, { beneficiaries: v })}
                 rows={2}
               />
             </Field>
-            <Field label={tr(STRINGS.scorecard.evidenceGaps)}>
+            <Field label={STRINGS.scorecard.evidenceGaps}>
               <TextArea
                 value={a?.evidenceGaps ?? ''}
                 onChange={(v) => updateAssessment(caseId, villageId, indicator, { evidenceGaps: v })}
@@ -584,12 +568,10 @@ function IndicatorCard({
               onChange={(v) => updateAssessment(caseId, villageId, indicator, { advocacyCritical: v })}
               label={
                 <span>
-                  {tr(STRINGS.scorecard.advocacyCritical)}{' '}
+                  {STRINGS.scorecard.advocacyCritical}{' '}
                   <span style={{ color: 'var(--text-muted)' }}>
-                    —{' '}
-                    {locale === 'id'
-                      ? 'memicu validasi jika confidence C atau D'
-                      : 'triggers validation if confidence is C or D'}
+                    ·{' '}
+                    {'triggers validation if confidence is C or D'}
                   </span>
                 </span>
               }
@@ -597,12 +579,12 @@ function IndicatorCard({
             <Checkbox
               checked={a?.hasContradiction ?? false}
               onChange={(v) => updateAssessment(caseId, villageId, indicator, { hasContradiction: v })}
-              label={tr(STRINGS.scorecard.contradiction)}
+              label={STRINGS.scorecard.contradiction}
             />
           </div>
 
           {a?.hasContradiction && (
-            <Field label={locale === 'id' ? 'Uraian kontradiksi' : 'Contradiction detail'} required>
+            <Field label={'Contradiction detail'} required>
               <TextArea
                 value={a?.contradictionNote ?? ''}
                 onChange={(v) =>
@@ -616,7 +598,7 @@ function IndicatorCard({
           {/* Confidence, kept visually separate from the score above */}
           <div className="rounded border px-2.5 py-2" style={{ borderColor: 'var(--border)' }}>
             <Field
-              label={tr(STRINGS.common.confidence)}
+              label={STRINGS.common.confidence}
               hint={result.confidenceRationale}
             >
               <Select
@@ -631,12 +613,12 @@ function IndicatorCard({
                   )
                 }
                 options={CONFIDENCE_GRADES.map((g) => ({ value: g, label: g }))}
-                placeholder={`${tr(STRINGS.common.proposed)}: ${result.confidence}`}
+                placeholder={`${STRINGS.common.proposed}: ${result.confidence}`}
               />
             </Field>
           </div>
 
-          <Field label={tr(STRINGS.common.notes)}>
+          <Field label={STRINGS.common.notes}>
             <TextArea
               value={a?.notes ?? ''}
               onChange={(v) => updateAssessment(caseId, villageId, indicator, { notes: v })}
