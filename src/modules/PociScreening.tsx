@@ -11,7 +11,7 @@ import { useMemo, useState } from 'react'
 import { STRINGS } from '@/i18n/strings'
 import { useCase, useSeedScreening, useScreenedVillages, type ScreenedVillage } from '@/hooks/useCaseData'
 import { useProjectStore } from '@/store/project'
-import { CaseMap, MapLegend } from '@/components/CaseMap'
+import { CaseMap } from '@/components/CaseMap'
 import {
   Panel,
   Empty,
@@ -152,9 +152,6 @@ export function PociScreening({ caseId }: { caseId: string | null }) {
                 selectedId={selectedId}
                 onSelect={setSelectedId}
               />
-            </div>
-            <div className="mt-2">
-              <MapLegend />
             </div>
           </Panel>
 

@@ -91,13 +91,25 @@ export function Empty({ children }: { children: ReactNode }) {
 // Scores and evidence state
 // ---------------------------------------------------------------------------
 
-/** Maps 0-100 onto the sequential ramp. */
+/**
+ * The ramp step a 0-100 value falls on, as a token name.
+ *
+ * Canvas cannot resolve `var(...)`, so anything drawn on a Leaflet map needs
+ * the token name and a lookup through useMapTokens rather than magnitudeColor.
+ */
+export function magnitudeTokenName(value: number): MapRampToken {
+  if (value >= 80) return '--seq-700'
+  if (value >= 60) return '--seq-500'
+  if (value >= 40) return '--seq-450'
+  if (value >= 20) return '--seq-400'
+  return '--seq-250'
+}
+
+type MapRampToken = '--seq-250' | '--seq-400' | '--seq-450' | '--seq-500' | '--seq-700'
+
+/** Maps 0-100 onto the sequential ramp, for DOM use where var() resolves. */
 export function magnitudeColor(value: number): string {
-  if (value >= 80) return 'var(--seq-700)'
-  if (value >= 60) return 'var(--seq-500)'
-  if (value >= 40) return 'var(--seq-450)'
-  if (value >= 20) return 'var(--seq-400)'
-  return 'var(--seq-250)'
+  return `var(${magnitudeTokenName(value)})`
 }
 
 export const BAND_COLOR: Record<ExposureBand, string> = {

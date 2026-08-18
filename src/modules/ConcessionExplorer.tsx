@@ -8,11 +8,13 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, useMap } from 'react-leaflet'
+import { MapContainer, GeoJSON, CircleMarker, Tooltip, useMap } from 'react-leaflet'
 import { loadConcessionIndex, loadProvinceGeometry, MissingDataError } from '@/data/load'
 import type { CaseSummary, ConcessionIndex, ConcessionRecord } from '@/data/types'
 import { STRINGS } from '@/i18n/strings'
 import { Panel, Button, TextInput, Select, Empty, MethodNote, StatTile, Badge } from '@/components/ui'
+import { BasemapLayer, BasemapSwitch, type Basemap } from '@/components/BasemapLayer'
+import { useMapTokens, tokenSignature } from '@/hooks/useMapTokens'
 
 function FlyTo({ center, zoom }: { center: [number, number] | null; zoom: number }) {
   const map = useMap()
@@ -43,6 +45,11 @@ export function ConcessionExplorer({
   const [selected, setSelected] = useState<ConcessionRecord | null>(null)
   const [geometry, setGeometry] = useState<GeoJSON.FeatureCollection | null>(null)
   const [geometryLoading, setGeometryLoading] = useState(false)
+  const [basemap, setBasemap] = useState<Basemap>('map')
+
+  // Leaflet paints to canvas and cannot read CSS variables, so map colours are
+  // resolved to concrete values here.
+  const tokens = useMapTokens()
 
   useEffect(() => {
     loadConcessionIndex()
@@ -191,23 +198,24 @@ export function ConcessionExplorer({
                 : 'Select a province to load polygon geometry.'
             }
           >
-            <div className="h-[26rem] overflow-hidden rounded" style={{ border: '1px solid var(--border)' }}>
+            <div
+              className="relative h-[26rem] overflow-hidden rounded"
+              style={{ border: '1px solid var(--border)' }}
+            >
+              <BasemapSwitch basemap={basemap} setBasemap={setBasemap} />
               <MapContainer style={{ height: '100%', width: '100%' }} center={[-1.5, 113]} zoom={5} preferCanvas>
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
+                <BasemapLayer basemap={basemap} />
                 <FlyTo center={selected ? [selected.lat, selected.lon] : null} zoom={11} />
 
                 {geometry && (
                   <GeoJSON
-                    key={province}
+                    key={`${province}|${tokenSignature(tokens)}`}
                     data={geometry}
                     style={{
-                      color: 'var(--seq-500)',
+                      color: tokens['--map-concession-line'],
                       weight: 0.6,
-                      fillColor: 'var(--seq-400)',
-                      fillOpacity: 0.35,
+                      fillColor: tokens['--map-concession-fill'],
+                      fillOpacity: 0.42,
                     }}
                   />
                 )}
@@ -218,10 +226,16 @@ export function ConcessionExplorer({
                     center={[c.lat, c.lon]}
                     radius={selected?.i === c.i ? 7 : 4}
                     pathOptions={{
-                      color: selected?.i === c.i ? 'var(--accent)' : 'var(--status-critical)',
-                      weight: selected?.i === c.i ? 2.5 : 1,
-                      fillColor: selected?.i === c.i ? 'var(--accent)' : 'var(--status-critical)',
-                      fillOpacity: 0.75,
+                      color:
+                        selected?.i === c.i
+                          ? tokens['--map-selected-line']
+                          : tokens['--map-concession-line'],
+                      weight: selected?.i === c.i ? 2.5 : 0.9,
+                      fillColor:
+                        selected?.i === c.i
+                          ? tokens['--map-selected-fill']
+                          : tokens['--map-concession-fill'],
+                      fillOpacity: selected?.i === c.i ? 0.95 : 0.8,
                     }}
                     eventHandlers={{ click: () => setSelected(c) }}
                   >

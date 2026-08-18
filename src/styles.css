@@ -76,6 +76,19 @@
   --accent-ink: #ffffff;
   --accent-soft: rgba(103, 160, 6, 0.12);
 
+  /* Map layer colours.
+     Kept separate from the --seq-* ramp: that ramp is the validated magnitude
+     encoding and must not be repurposed for categorical layers. Green reads as
+     the concession (the source of influence), gold as the screening envelope,
+     and a muted sage lets unscored villages recede into context. */
+  --map-concession-line: #315b2a;
+  --map-concession-fill: #5b944c;
+  --map-envelope-line: #b8860b;
+  --map-envelope-fill: #f4c542;
+  --map-village-line: #7f8a82;
+  --map-selected-line: #111111;
+  --map-selected-fill: #f0b429;
+
   /* Paired foreground/background tints for pills and callouts. The base
      --status-* hues are tuned as fills and are far too light to sit as text on
      a light surface (#fab219 is only 1.79:1), so the -fg variants are darkened
@@ -129,6 +142,15 @@
     --status-warning-bg: rgba(250, 178, 25, 0.18);
     --status-critical-fg: #ef8a8a;
     --status-critical-bg: rgba(208, 59, 59, 0.22);
+
+    /* Lifted so the layers hold up against a dark basemap. */
+    --map-concession-line: #9ed48c;
+    --map-concession-fill: #6fae5c;
+    --map-envelope-line: #f4c542;
+    --map-envelope-fill: #f4c542;
+    --map-village-line: #97a39a;
+    --map-selected-line: #ffffff;
+    --map-selected-fill: #f0b429;
   }
 }
 
@@ -168,6 +190,15 @@
   --status-warning-bg: rgba(250, 178, 25, 0.18);
   --status-critical-fg: #ef8a8a;
   --status-critical-bg: rgba(208, 59, 59, 0.22);
+
+  /* Lifted so the layers hold up against a dark basemap. */
+  --map-concession-line: #9ed48c;
+  --map-concession-fill: #6fae5c;
+  --map-envelope-line: #f4c542;
+  --map-envelope-fill: #f4c542;
+  --map-village-line: #97a39a;
+  --map-selected-line: #ffffff;
+  --map-selected-fill: #f0b429;
 }
 
 html,
@@ -272,16 +303,6 @@ body {
   background: var(--surface-1);
   color: var(--text-primary);
   border-bottom-color: var(--border);
-}
-
-/* Dark mode: tone down the raster basemap so data marks stay dominant. */
-@media (prefers-color-scheme: dark) {
-  :root:where(:not([data-theme='light'])) .leaflet-tile-pane {
-    filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9);
-  }
-}
-:root[data-theme='dark'] .leaflet-tile-pane {
-  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9);
 }
 
 /* Scrollbars inside data panes. */
